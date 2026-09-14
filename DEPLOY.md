@@ -93,12 +93,18 @@ In the GitHub repo: **Settings → Secrets and variables → Actions → Variabl
 | `VITE_API_BASE` | `https://fither-ai.<your-account>.workers.dev` |
 | `VITE_DEMO_POLISH` | `true` to hide the "coming soon" toasts for screenshots, else omit |
 
-And in **Secrets**, for the Worker deploy workflow:
+**You can stop here.** Deploying the Worker with `npm run deploy:worker` from
+your machine uses your own `wrangler login`, so no Cloudflare credentials need
+to go into GitHub at all.
+
+Only if you want the Worker to redeploy automatically on every push, add these
+**Secrets** as well — otherwise the *Deploy server* workflow will fail, which is
+harmless but noisy:
 
 | Name | Where to get it |
 |---|---|
 | `CLOUDFLARE_API_TOKEN` | Cloudflare dashboard → My Profile → API Tokens → *Edit Cloudflare Workers* template |
-| `CLOUDFLARE_ACCOUNT_ID` | Cloudflare dashboard → Workers & Pages → right-hand sidebar |
+| `CLOUDFLARE_ACCOUNT_ID` | `npx wrangler whoami`, or the Workers & Pages sidebar |
 
 ---
 

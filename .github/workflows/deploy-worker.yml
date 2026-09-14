@@ -24,6 +24,9 @@ jobs:
   deploy:
     needs: test
     runs-on: ubuntu-latest
+    # Skipped unless Cloudflare credentials are configured, so a repo that
+    # deploys the Worker manually does not collect failed runs.
+    if: vars.DEPLOY_WORKER == 'true'
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
