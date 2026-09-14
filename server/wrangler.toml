@@ -12,7 +12,7 @@ ANTHROPIC_MODEL = "claude-haiku-4-5"
 [[d1_databases]]
 binding = "DB"
 database_name = "fither"
-database_id = "REPLACE_WITH_YOUR_D1_ID"
+database_id = "992e0b97-70d2-41f1-baf2-468561d1191b"
 
 # Secrets (wrangler secret put …):
 #   LINE_CHANNEL_SECRET
