@@ -1,0 +1,8 @@
+[
+  { "id": "e1", "title_th": "ฟันรันการกุศล 5 กม. สวนรถไฟ", "title_en": "Charity Fun Run 5K", "date": "2026-09-20", "area": "Chatuchak", "price_th": "฿350", "price_en": "฿350", "tint": "#E7F1EA", "spots_left": 42 },
+  { "id": "e2", "title_th": "คลาสทดลองฟรี: เวทเทรนนิ่งมือใหม่", "title_en": "Free trial: beginner strength class", "date": "2026-09-18", "area": "Ari", "price_th": "ฟรี", "price_en": "Free", "tint": "#FDEEE8", "spots_left": 6 },
+  { "id": "e3", "title_th": "Wellness Market ตลาดสุขภาพ", "title_en": "Wellness Market", "date": "2026-09-27", "area": "Thonglor", "price_th": "ฟรี", "price_en": "Free", "tint": "#F2EFFA", "spots_left": 200 },
+  { "id": "e4", "title_th": "เวิร์กช็อป: กินอย่างไรให้พอโปรตีน", "title_en": "Workshop: hitting your protein target", "date": "2026-10-04", "area": "Siam", "price_th": "฿490", "price_en": "฿490", "tint": "#FBF2E5", "spots_left": 18 },
+  { "id": "e5", "title_th": "โยคะพระอาทิตย์ตก ริมแม่น้ำ", "title_en": "Sunset Riverside Yoga", "date": "2026-10-11", "area": "Charoen Krung", "price_th": "฿250", "price_en": "฿250", "tint": "#EAF2F8", "spots_left": 25 },
+  { "id": "e6", "title_th": "เดิน-วิ่ง 10 กม. สะพานพระราม 8", "title_en": "Rama VIII Bridge 10K", "date": "2026-10-25", "area": "Bang Phlat", "price_th": "฿600", "price_en": "฿600", "tint": "#F7ECEF", "spots_left": 310 }
+]

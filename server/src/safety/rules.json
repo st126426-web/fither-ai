@@ -1,0 +1,179 @@
+{
+  "version": "1.0.0",
+  "volume": {
+    "max_increase_pct": 10,
+    "min_decrease_after_missed_week_pct": 20
+  },
+  "session": {
+    "max_sessions_per_week_over_target": 0,
+    "duration_tolerance_min": 0
+  },
+  "ranges": {
+    "sets_min": 1,
+    "sets_max": 5,
+    "reps_min": 3,
+    "reps_max": 20
+  },
+  "load_note": {
+    "max_step_increase": 1,
+    "_comment": "A note is accepted when it is built entirely from recognised segments and contains no jump phrase. This polices progression size, not formatting, so a combination like '10 นาที ชัน 3%' is fine.",
+    "segment_patterns": [
+      "^(น้ำหนักตัว|bodyweight)",
+      "^(เท่าเดิม|same as last week|same)",
+      "^(เบามาก|เบา|very light|light)",
+      "^[0-9]{1,2}(\\.[05])? ?(kg|กก\\.?|กิโล)( ?(ต่อข้าง|ข้างละ|each|per hand))?",
+      "^\\+1 ?(step|ขั้น)",
+      "^[0-9]{1,3} ?(นาที|min|mins|minutes|วินาที|sec|seconds|รอบ|rounds|laps|ครั้ง)",
+      "^(ชัน|incline) ?[0-9]{1,2} ?%",
+      "^(ความเร็ว|speed) ?[0-9]{1,2}(\\.[0-9])? ?(km/h|กม/ชม|kph)?",
+      "^(พัก|rest) ?[0-9]{1,3} ?(วินาที|sec|นาที|min)"
+    ],
+    "deny_patterns": [
+      "เพิ่มเป็น",
+      "เพิ่มอีก",
+      "\\+[2-9]",
+      "\\+[0-9]{2,}",
+      "(double|เท่าตัว|สองเท่า)",
+      "(หนักขึ้นมาก|มากขึ้นเยอะ|สุดแรง|max out)"
+    ]
+  },
+  "experience_tiers": {
+    "beginner": [
+      "beginner"
+    ],
+    "returning": [
+      "beginner"
+    ],
+    "intermediate": [
+      "beginner",
+      "intermediate"
+    ]
+  },
+  "life_stage_contraindications": {
+    "postpartum": [
+      "high-impact",
+      "prone",
+      "spinal-loading"
+    ],
+    "pregnant": [
+      "high-impact",
+      "prone",
+      "supine",
+      "spinal-loading"
+    ],
+    "perimenopause": [],
+    "none": []
+  },
+  "red_flags": [
+    {
+      "code": "PAIN",
+      "severity": "block",
+      "terms": [
+        "เจ็บ",
+        "ปวด",
+        "pain",
+        "hurts",
+        "hurting",
+        "sore joint"
+      ],
+      "warn_intents": [
+        "onboard"
+      ],
+      "_comment": "Generic aches are the single most common reason women start training. Blocking onboarding on them makes the product unusable; a warning still records the flag and tells the agent to respond with care."
+    },
+    {
+      "code": "INJURY",
+      "severity": "block",
+      "terms": [
+        "บาดเจ็บ",
+        "injury",
+        "injured",
+        "sprain",
+        "strain",
+        "เคล็ด"
+      ],
+      "warn_intents": []
+    },
+    {
+      "code": "DIZZY",
+      "severity": "block",
+      "terms": [
+        "เวียนหัว",
+        "หน้ามืด",
+        "dizzy",
+        "dizziness",
+        "faint",
+        "lightheaded"
+      ],
+      "warn_intents": []
+    },
+    {
+      "code": "PREGNANCY",
+      "severity": "block",
+      "terms": [
+        "ท้อง",
+        "ตั้งครรภ์",
+        "pregnant",
+        "pregnancy"
+      ],
+      "warn_intents": []
+    },
+    {
+      "code": "CHEST",
+      "severity": "block",
+      "terms": [
+        "แน่นหน้าอก",
+        "เจ็บหน้าอก",
+        "chest pain",
+        "chest tightness",
+        "หายใจไม่ออก",
+        "shortness of breath"
+      ],
+      "warn_intents": []
+    },
+    {
+      "code": "DISTRESS",
+      "severity": "block",
+      "terms": [
+        "ซึมเศร้า",
+        "ทำร้ายตัวเอง",
+        "อยากตาย",
+        "depressed",
+        "self harm",
+        "suicidal"
+      ],
+      "warn_intents": []
+    }
+  ],
+  "guilt_words": [
+    "ขี้เกียจ",
+    "ล้มเหลว",
+    "ไม่มีวินัย",
+    "อ่อนแอ",
+    "ผิดหวัง",
+    "น่าเสียดาย",
+    "ต้องชดเชย",
+    "ชดเชยที่ขาด",
+    "ไม่พยายาม",
+    "ปล่อยตัว",
+    "แก้ตัว",
+    "โทษตัวเอง",
+    "lazy",
+    "failed",
+    "failure",
+    "no discipline",
+    "undisciplined",
+    "excuse",
+    "make up for",
+    "fell off",
+    "slacked",
+    "guilty",
+    "ashamed",
+    "disappointing",
+    "should have",
+    "you let yourself"
+  ],
+  "reply": {
+    "max_chars": 500
+  }
+}

@@ -1,0 +1,255 @@
+{
+  "_comment": "Beginner guidance per exercise: three setup/execution cues and the single most common mistake. Merged into the library at load time so exercises.json stays readable.",
+  "ex_bw_squat": {
+    "steps_th": ["ยืนแยกเท้ากว้างเท่าสะโพก ปลายเท้าชี้ออกเล็กน้อย", "ดันสะโพกไปด้านหลังเหมือนจะนั่งเก้าอี้ แล้วค่อยงอเข่า", "ลงเท่าที่หลังยังตรง แล้วดันพื้นด้วยส้นเท้าเพื่อยืนขึ้น"],
+    "steps_en": ["Feet hip-width, toes turned out slightly", "Push the hips back like sitting into a chair, then bend the knees", "Go as low as you can keep a flat back, then drive up through the heels"],
+    "mistake_th": "เข่าบิดเข้าหากัน — ดันเข่าออกให้อยู่แนวเดียวกับปลายเท้า",
+    "mistake_en": "Knees caving inward — push them out in line with your toes"
+  },
+  "ex_box_squat": {
+    "steps_th": ["ยืนหันหลังให้เก้าอี้ ห่างประมาณหนึ่งฝ่ามือ", "ดันสะโพกไปหลัง ลงจนก้นแตะเก้าอี้เบา ๆ", "ไม่ต้องนั่งเต็มที่ แตะแล้วยืนขึ้นทันที"],
+    "steps_en": ["Stand with a chair a hand's width behind you", "Push the hips back and lower until you just touch the seat", "Do not sit down fully — touch and stand straight back up"],
+    "mistake_th": "ทิ้งตัวลงนั่ง — ควรควบคุมลงช้า ๆ",
+    "mistake_en": "Dropping onto the chair — lower under control"
+  },
+  "ex_db_goblet_squat": {
+    "steps_th": ["ถือดัมเบลตั้งชิดอก ศอกชี้ลงพื้น", "ดันสะโพกไปหลังแล้วลง เข่าตามปลายเท้า", "ดันส้นเท้ายืนขึ้น บีบก้นที่ด้านบน"],
+    "steps_en": ["Hold one dumbbell upright against your chest, elbows pointing down", "Push the hips back and squat, knees tracking over toes", "Drive through the heels to stand, squeezing the glutes at the top"],
+    "mistake_th": "โน้มตัวไปหน้าเพราะดัมเบลหลุดห่างอก — กอดให้ชิดตลอด",
+    "mistake_en": "Leaning forward as the dumbbell drifts away — keep it tight to your chest"
+  },
+  "ex_bw_glute_bridge": {
+    "steps_th": ["นอนหงาย ชันเข่า วางเท้าห่างสะโพกหนึ่งฝ่ามือ", "กดส้นเท้าลงพื้น ยกสะโพกขึ้นจนลำตัวเป็นเส้นตรง", "บีบก้นค้าง 1 วินาที แล้วลงช้า ๆ"],
+    "steps_en": ["Lie on your back, knees bent, feet a hand's width from your hips", "Press through the heels and lift the hips until hips, knees and shoulders line up", "Squeeze the glutes for one second, then lower slowly"],
+    "mistake_th": "แอ่นหลังแทนที่จะบีบก้น — เก็บซี่โครงลง ให้ก้นทำงาน",
+    "mistake_en": "Arching the lower back instead of squeezing — tuck the ribs down and let the glutes do it"
+  },
+  "ex_db_hip_hinge": {
+    "steps_th": ["ยืนถือดัมเบลหน้าต้นขา เข่างอเล็กน้อยค้างไว้", "ดันสะโพกไปด้านหลัง ปล่อยดัมเบลเลื่อนเลียดขา", "รู้สึกตึงหลังต้นขาแล้วบีบก้นดันสะโพกกลับมายืน"],
+    "steps_en": ["Stand holding dumbbells at your thighs, knees softly bent and staying bent", "Push the hips straight back, letting the dumbbells slide down your legs", "When you feel the hamstrings stretch, squeeze the glutes to stand tall"],
+    "mistake_th": "งอหลังแทนที่จะพับสะโพก — หลังต้องตรงตลอดช่วง",
+    "mistake_en": "Rounding the back instead of hinging — the spine stays flat throughout"
+  },
+  "ex_db_deadlift": {
+    "steps_th": ["วางดัมเบลข้างเท้า ย่อสะโพกลงจับ หลังตรง", "ดันพื้นด้วยขา ยกขึ้นพร้อมกับดันสะโพกไปหน้า", "ลงโดยพับสะโพกก่อน แล้วค่อยงอเข่า"],
+    "steps_en": ["Set the dumbbells beside your feet, hinge down to grip them with a flat back", "Push the floor away with your legs and drive the hips forward to stand", "Lower by hinging at the hips first, then bending the knees"],
+    "mistake_th": "ยกด้วยหลังแทนขา — เริ่มจากดันพื้นด้วยขาเสมอ",
+    "mistake_en": "Lifting with the back instead of the legs — always start by pushing the floor away"
+  },
+  "ex_bw_hip_thrust": {
+    "steps_th": ["นั่งพื้น พิงหลังส่วนบนกับโซฟาหรือเตียง", "ชันเข่า กดส้นเท้า ดันสะโพกขึ้นจนลำตัวขนานพื้น", "เก็บคางเข้าหาอก บีบก้นค้างแล้วลงช้า ๆ"],
+    "steps_en": ["Sit on the floor with your upper back against a sofa or bed", "Knees bent, press through the heels and lift the hips until your torso is parallel to the floor", "Keep the chin tucked, squeeze at the top, lower slowly"],
+    "mistake_th": "เงยคางขึ้น ทำให้หลังแอ่น — มองไปข้างหน้าระดับเข่า",
+    "mistake_en": "Chin lifting and the back arching — keep your eyes on your knees"
+  },
+  "ex_db_hip_thrust": {
+    "steps_th": ["วางดัมเบลบนสะโพก ใช้ผ้าขนหนูรองถ้าเจ็บ", "กดส้นเท้า ดันสะโพกขึ้นจนลำตัวตรง", "บีบก้นค้าง 1 วินาที แล้วลงช้า ๆ"],
+    "steps_en": ["Rest a dumbbell across your hips, padded with a towel if it digs in", "Press through the heels and lift the hips until your body is straight", "Squeeze for one second, then lower under control"],
+    "mistake_th": "ดันด้วยปลายเท้า — น้ำหนักต้องอยู่ที่ส้นเท้า",
+    "mistake_en": "Pushing through the toes — the weight belongs on your heels"
+  },
+  "ex_bw_split_squat": {
+    "steps_th": ["ก้าวขาหนึ่งไปข้างหน้าประมาณสองฝ่าเท้า", "ลงตรง ๆ จนเข่าหลังเกือบแตะพื้น ลำตัวตั้งตรง", "ดันส้นเท้าหน้ายืนขึ้น จับผนังช่วยทรงตัวได้"],
+    "steps_en": ["Step one foot forward about two shoe lengths", "Lower straight down until the back knee nearly touches, torso upright", "Drive up through the front heel — hold a wall for balance if needed"],
+    "mistake_th": "โน้มตัวไปข้างหน้า — ลงตรง ๆ เหมือนลิฟต์",
+    "mistake_en": "Leaning forward — travel straight down like a lift"
+  },
+  "ex_db_lunge": {
+    "steps_th": ["ยืนถือดัมเบลข้างลำตัว", "ก้าวถอยหลังหนึ่งก้าว ลงจนเข่าหลังเกือบแตะพื้น", "ดันส้นเท้าหน้ากลับมายืน สลับข้าง"],
+    "steps_en": ["Stand with a dumbbell in each hand at your sides", "Step one foot backwards and lower until the back knee nearly touches", "Drive through the front heel to stand, then alternate"],
+    "mistake_th": "ก้าวสั้นเกินจนเข่าเลยปลายเท้ามาก — ก้าวให้ยาวพอ",
+    "mistake_en": "Too short a step so the front knee shoots far past the toes — step further back"
+  },
+  "ex_bw_step_up": {
+    "steps_th": ["วางเท้าทั้งฝ่าบนขั้นบันไดหรือกล่องที่มั่นคง", "ดันด้วยขาบนขึ้นไปยืน อย่าถีบขาล่างช่วย", "ลงช้า ๆ ด้วยการควบคุม สลับข้าง"],
+    "steps_en": ["Place your whole foot on a stable step or box", "Drive up through the top leg — do not push off the bottom foot", "Lower slowly under control, then alternate"],
+    "mistake_th": "กระโดดขึ้นด้วยแรงส่ง — ต้องขึ้นช้าและควบคุมได้",
+    "mistake_en": "Bouncing up with momentum — go up slowly and in control"
+  },
+  "ex_bw_calf_raise": {
+    "steps_th": ["ยืนตัวตรง จับผนังเบา ๆ เพื่อทรงตัว", "เขย่งขึ้นให้สุดช่วง ค้าง 1 วินาที", "ลงช้า ๆ นับสองจังหวะ"],
+    "steps_en": ["Stand tall, fingertips on a wall for balance", "Rise onto the balls of your feet as high as you can, hold one second", "Lower over a slow two-count"],
+    "mistake_th": "ขึ้นลงเร็วด้วยแรงเด้ง — ช้าลงจะได้ผลกว่า",
+    "mistake_en": "Bouncing quickly — slower is more effective"
+  },
+  "ex_bw_wall_pushup": {
+    "steps_th": ["วางมือบนผนังกว้างกว่าไหล่เล็กน้อย ถอยเท้าออกมา", "ลำตัวเป็นเส้นตรงจากหัวถึงส้นเท้า", "งอศอกเข้าหาผนัง แล้วดันกลับ ยิ่งถอยห่างยิ่งหนัก"],
+    "steps_en": ["Hands on the wall slightly wider than your shoulders, step your feet back", "Keep a straight line from head to heels", "Bend the elbows towards the wall and press back — step further back to make it harder"],
+    "mistake_th": "สะโพกตกหรือยกสูง — ลำตัวต้องเป็นเส้นตรง",
+    "mistake_en": "Hips sagging or piking up — keep one straight line"
+  },
+  "ex_bw_incline_pushup": {
+    "steps_th": ["วางมือบนขอบโต๊ะหรือม้านั่งที่มั่นคง", "มือกว้างกว่าไหล่เล็กน้อย ศอกทำมุม 45 องศากับลำตัว", "ลงจนอกเกือบแตะ แล้วดันขึ้น"],
+    "steps_en": ["Hands on a sturdy table edge or bench", "Slightly wider than shoulders, elbows at about 45 degrees to your body", "Lower until your chest is just off the surface, then press up"],
+    "mistake_th": "กางศอกออก 90 องศา — เจ็บไหล่ ให้เก็บเข้าหน่อย",
+    "mistake_en": "Elbows flaring to 90 degrees — hard on the shoulders, tuck them in"
+  },
+  "ex_bw_knee_pushup": {
+    "steps_th": ["คุกเข่าบนเสื่อ มือวางกว้างกว่าไหล่เล็กน้อย", "ลำตัวเป็นเส้นตรงจากเข่าถึงหัว", "ลงจนอกเกือบแตะพื้น แล้วดันขึ้น"],
+    "steps_en": ["Kneel on a mat, hands slightly wider than your shoulders", "Straight line from knees to head", "Lower until your chest nearly touches, then press up"],
+    "mistake_th": "สะโพกตก — เกร็งแกนกลางให้ลำตัวเป็นแผ่นเดียว",
+    "mistake_en": "Hips sagging — brace your core so the torso moves as one piece"
+  },
+  "ex_bw_pushup": {
+    "steps_th": ["วางมือกว้างกว่าไหล่เล็กน้อย เท้าชิด", "เกร็งแกนกลางและก้น ลำตัวเป็นเส้นตรง", "ลงจนอกเกือบแตะพื้น ศอก 45 องศา แล้วดันขึ้น"],
+    "steps_en": ["Hands slightly wider than shoulders, feet together", "Brace the core and glutes so the body is one straight line", "Lower until your chest is just off the floor, elbows at 45 degrees, then press up"],
+    "mistake_th": "หัวยื่นลงก่อนอก — ลงทั้งลำตัวพร้อมกัน",
+    "mistake_en": "Head dipping before the chest — lower the whole body together"
+  },
+  "ex_db_shoulder_press": {
+    "steps_th": ["ยืนหรือนั่งหลังตรง ถือดัมเบลระดับไหล่ ฝ่ามือหันไปหน้า", "ดันขึ้นตรง ๆ เหนือหัวไหล่จนแขนเกือบเหยียดสุด", "ลงช้า ๆ กลับมาระดับไหล่"],
+    "steps_en": ["Stand or sit tall, dumbbells at shoulder height, palms facing forward", "Press straight up over your shoulders until the arms are almost locked", "Lower slowly back to shoulder height"],
+    "mistake_th": "แอ่นหลังเพื่อดันน้ำหนัก — เกร็งท้อง ลดน้ำหนักลงถ้าต้องแอ่น",
+    "mistake_en": "Arching the back to move the weight — brace your abs, or go lighter"
+  },
+  "ex_db_floor_press": {
+    "steps_th": ["นอนหงายชันเข่า ถือดัมเบลเหนืออก", "ลงช้า ๆ จนต้นแขนแตะพื้นเบา ๆ", "ดันขึ้นตรง ๆ จนแขนเกือบเหยียด"],
+    "steps_en": ["Lie on your back with knees bent, dumbbells over your chest", "Lower slowly until your upper arms touch the floor lightly", "Press straight back up until the arms are almost extended"],
+    "mistake_th": "กระแทกศอกลงพื้น — แตะเบา ๆ แล้วดันขึ้น",
+    "mistake_en": "Slamming the elbows into the floor — touch lightly, then press"
+  },
+  "ex_db_lateral_raise": {
+    "steps_th": ["ยืนถือดัมเบลเบา ๆ ข้างลำตัว ศอกงอเล็กน้อย", "กางแขนออกด้านข้างจนถึงระดับไหล่ ไม่เกิน", "ลงช้า ๆ นับสองจังหวะ"],
+    "steps_en": ["Stand with light dumbbells at your sides, elbows slightly bent", "Raise out to the sides up to shoulder height, no higher", "Lower over a slow two-count"],
+    "mistake_th": "ใช้น้ำหนักมากจนต้องเหวี่ยง — ท่านี้ต้องเบาจริง ๆ",
+    "mistake_en": "Going too heavy and swinging — this one is meant to be light"
+  },
+  "ex_db_row": {
+    "steps_th": ["วางมือและเข่าข้างหนึ่งบนม้านั่งหรือเตียง หลังตรงขนานพื้น", "ถือดัมเบลอีกข้าง ปล่อยแขนห้อยลง", "ดึงศอกไปด้านหลังเลียดลำตัว บีบสะบัก แล้วลงช้า ๆ"],
+    "steps_en": ["Place one hand and knee on a bench or bed, back flat and parallel to the floor", "Hold the dumbbell in the other hand, arm hanging straight down", "Pull the elbow back along your body, squeeze the shoulder blade, then lower slowly"],
+    "mistake_th": "บิดลำตัวตามการดึง — ไหล่ทั้งสองข้างต้องขนานพื้นตลอด",
+    "mistake_en": "Twisting the torso as you pull — keep both shoulders level"
+  },
+  "ex_db_bent_row": {
+    "steps_th": ["ยืนแยกเท้ากว้างเท่าสะโพก พับสะโพกลงประมาณ 45 องศา", "หลังตรง ปล่อยดัมเบลห้อยหน้าหน้าแข้ง", "ดึงศอกไปหลังจนดัมเบลถึงซี่โครงล่าง แล้วลงช้า ๆ"],
+    "steps_en": ["Feet hip-width, hinge forward to about 45 degrees", "Flat back, dumbbells hanging in front of your shins", "Pull the elbows back until the dumbbells reach your lower ribs, then lower slowly"],
+    "mistake_th": "หลังโก่ง — ถ้ารักษาหลังตรงไม่ได้ ให้ก้มน้อยลง",
+    "mistake_en": "Rounding the back — if you cannot keep it flat, hinge less"
+  },
+  "ex_band_row": {
+    "steps_th": ["คล้องยางยืดกับเสาหรือลูกบิดประตูระดับเอว", "ยืนถอยจนยางตึง แขนเหยียดไปหน้า", "ดึงศอกไปหลัง บีบสะบัก แล้วปล่อยกลับช้า ๆ"],
+    "steps_en": ["Anchor the band at waist height on a post or door handle", "Step back until the band is taut, arms extended forward", "Pull the elbows back, squeeze the shoulder blades, then release slowly"],
+    "mistake_th": "ยักไหล่ขึ้นตอนดึง — กดไหล่ลงแล้วดึงด้วยหลัง",
+    "mistake_en": "Shrugging as you pull — keep the shoulders down and pull with your back"
+  },
+  "ex_db_rear_delt_fly": {
+    "steps_th": ["พับสะโพกก้มไปหน้าประมาณ 45 องศา หลังตรง", "ถือดัมเบลเบา ๆ ห้อยลง ศอกงอเล็กน้อย", "กางแขนออกด้านข้าง บีบสะบัก แล้วลงช้า ๆ"],
+    "steps_en": ["Hinge forward to about 45 degrees with a flat back", "Hold light dumbbells hanging down, elbows slightly bent", "Open the arms out to the sides, squeeze the shoulder blades, lower slowly"],
+    "mistake_th": "ใช้น้ำหนักมากจนกลายเป็นดึง — ท่านี้ต้องเบามาก",
+    "mistake_en": "Going heavy so it turns into a row — this needs to be very light"
+  },
+  "ex_db_biceps_curl": {
+    "steps_th": ["ยืนตัวตรง ถือดัมเบลข้างลำตัว ฝ่ามือหันไปหน้า", "ศอกแนบลำตัว ม้วนขึ้นถึงระดับไหล่", "ลงช้า ๆ จนแขนเหยียดเกือบสุด"],
+    "steps_en": ["Stand tall with dumbbells at your sides, palms forward", "Keeping the elbows pinned to your ribs, curl up to shoulder height", "Lower slowly until the arms are almost straight"],
+    "mistake_th": "เหวี่ยงตัวช่วย — ถ้าต้องเหวี่ยงแปลว่าหนักเกิน",
+    "mistake_en": "Swinging the body — if you need momentum, it is too heavy"
+  },
+  "ex_db_triceps_ext": {
+    "steps_th": ["ถือดัมเบลหนึ่งลูกสองมือ ยกขึ้นเหนือหัว", "ศอกชี้ไปข้างหน้า ไม่กางออก", "งอศอกลงหลังหัว แล้วเหยียดขึ้นกลับ"],
+    "steps_en": ["Hold one dumbbell with both hands overhead", "Point the elbows forward, do not let them flare", "Bend the elbows to lower behind your head, then extend back up"],
+    "mistake_th": "ศอกกางออกด้านข้าง — เก็บเข้าหาหูตลอด",
+    "mistake_en": "Elbows flaring outwards — keep them close to your ears"
+  },
+  "ex_bw_plank": {
+    "steps_th": ["วางศอกใต้ไหล่พอดี ปลายเท้ายันพื้น", "เก็บก้นเล็กน้อย ลำตัวเป็นเส้นตรง", "หายใจปกติ นับ reps เป็นวินาที"],
+    "steps_en": ["Elbows directly under your shoulders, toes on the floor", "Tuck the pelvis slightly so the body is one straight line", "Breathe normally — reps here count as seconds"],
+    "mistake_th": "สะโพกยกสูงหรือตกต่ำ — ถ้าเริ่มตกให้หยุดพัก",
+    "mistake_en": "Hips piking up or sagging — when they sag, the set is over"
+  },
+  "ex_bw_dead_bug": {
+    "steps_th": ["นอนหงาย ยกแขนตรงขึ้นฟ้า ยกเข่าตั้งฉาก", "กดหลังล่างติดพื้นตลอดเวลา", "ยืดแขนข้างหนึ่งกับขาตรงข้ามออกช้า ๆ แล้วกลับ"],
+    "steps_en": ["Lie on your back, arms straight up, knees bent at 90 degrees", "Press the lower back into the floor and keep it there", "Slowly extend one arm and the opposite leg, then return"],
+    "mistake_th": "หลังล่างลอยจากพื้น — ยืดขาออกน้อยลงจนคุมได้",
+    "mistake_en": "The lower back lifting off the floor — extend less until you can hold it down"
+  },
+  "ex_bw_bird_dog": {
+    "steps_th": ["คุกเข่าสี่ขา มือใต้ไหล่ เข่าใต้สะโพก", "ยืดแขนข้างหนึ่งกับขาตรงข้ามออกจนขนานพื้น", "สะโพกไม่บิด ค้าง 2 วินาที แล้วสลับ"],
+    "steps_en": ["On all fours, hands under shoulders and knees under hips", "Extend one arm and the opposite leg until level with your back", "Keep the hips square, hold two seconds, then switch"],
+    "mistake_th": "สะโพกเอียงตามขาที่ยืด — ยกต่ำลงแต่รักษาสะโพกให้นิ่ง",
+    "mistake_en": "Hips rolling with the lifted leg — lift lower but keep the hips still"
+  },
+  "ex_bw_side_plank": {
+    "steps_th": ["นอนตะแคง ศอกใต้ไหล่ งอเข่า 90 องศา", "ดันสะโพกขึ้นจนลำตัวเป็นเส้นตรงจากหัวถึงเข่า", "ค้างไว้ หายใจปกติ นับ reps เป็นวินาที"],
+    "steps_en": ["Lie on your side, elbow under your shoulder, knees bent to 90 degrees", "Lift the hips until head, shoulders and knees form a straight line", "Hold and breathe — reps count as seconds"],
+    "mistake_th": "สะโพกร่วงลงพื้น — ลดเวลาลงแล้วรักษาฟอร์ม",
+    "mistake_en": "Hips dropping towards the floor — shorten the hold and keep the shape"
+  },
+  "ex_bw_glute_kickback": {
+    "steps_th": ["คุกเข่าสี่ขา หลังตรง", "ดันส้นเท้าข้างหนึ่งขึ้นเพดาน เข่างอ 90 องศา", "บีบก้นที่ด้านบน แล้วลงช้า ๆ"],
+    "steps_en": ["On all fours with a flat back", "Drive one heel towards the ceiling, knee bent at 90 degrees", "Squeeze the glute at the top, then lower slowly"],
+    "mistake_th": "แอ่นหลังเพื่อยกให้สูงขึ้น — ยกแค่ระดับที่หลังยังนิ่ง",
+    "mistake_en": "Arching the back to lift higher — only go as high as the back stays still"
+  },
+  "ex_bw_clamshell": {
+    "steps_th": ["นอนตะแคง งอเข่า วางขาซ้อนกัน", "เปิดเข่าบนขึ้นโดยที่เท้ายังชิดกัน", "สะโพกไม่หมุนตาม บีบก้นแล้วลงช้า ๆ"],
+    "steps_en": ["Lie on your side with knees bent and legs stacked", "Open the top knee while keeping the feet together", "Do not let the hips roll back — squeeze, then lower slowly"],
+    "mistake_th": "หมุนสะโพกไปหลังเพื่อเปิดให้กว้าง — เปิดน้อยลงแต่สะโพกนิ่ง",
+    "mistake_en": "Rolling the hips back to open wider — open less but keep the hips stacked"
+  },
+  "ex_tm_walk_incline": {
+    "steps_th": ["ตั้งความชัน 5-8% ความเร็วที่ยังพูดเป็นประโยคได้", "ยืนตัวตรง ไม่เกาะราวจับ", "นับ reps เป็นนาที"],
+    "steps_en": ["Set 5-8% incline at a pace where you can still speak in sentences", "Stand tall and avoid holding the rails", "Reps here count as minutes"],
+    "mistake_th": "เกาะราวจับตลอด — ทำให้เบาลงมากและหลังงอ",
+    "mistake_en": "Gripping the handrails — it makes the work far easier and rounds your back"
+  },
+  "ex_tm_walk_easy": {
+    "steps_th": ["ความชัน 0-2% เดินสบาย ๆ หายใจเป็นปกติ", "ใช้เป็นวอร์มอัพหรือวันฟื้นตัว", "นับ reps เป็นนาที"],
+    "steps_en": ["0-2% incline, an easy pace where breathing stays comfortable", "Use as a warm-up or a recovery day", "Reps count as minutes"],
+    "mistake_th": "เร่งเร็วเกินจนกลายเป็นคาร์ดิโอหนัก — วันนี้ต้องเบาจริง ๆ",
+    "mistake_en": "Pushing the pace until it becomes hard cardio — this is meant to stay easy"
+  },
+  "ex_tm_intervals": {
+    "steps_th": ["วอร์มอัพเดิน 3 นาทีก่อน", "วิ่งเบา 1 นาที สลับเดิน 2 นาที", "นับ reps เป็นจำนวนรอบ"],
+    "steps_en": ["Warm up with a 3-minute walk", "Jog easy for 1 minute, then walk for 2 minutes", "Reps count as rounds"],
+    "mistake_th": "วิ่งช่วงแรกเร็วเกิน — ควรเหลือแรงจนรอบสุดท้าย",
+    "mistake_en": "Going too hard on the first rounds — you should finish the last one still able to continue"
+  },
+  "ex_bw_march_in_place": {
+    "steps_th": ["ยืนตัวตรง ย่ำเท้าอยู่กับที่", "ยกเข่าขึ้นระดับสะโพก แกว่งแขนตาม", "นับ reps เป็นนาที"],
+    "steps_en": ["Stand tall and march on the spot", "Lift the knees to hip height, swinging the arms naturally", "Reps count as minutes"],
+    "mistake_th": "ยกเข่าต่ำเกินจนไม่ได้วอร์ม — ยกให้ถึงระดับสะโพก",
+    "mistake_en": "Barely lifting the knees so nothing warms up — bring them to hip height"
+  },
+  "ex_bw_jumping_jack": {
+    "steps_th": ["ยืนเท้าชิด แขนแนบลำตัว", "กระโดดกางขาพร้อมยกแขนขึ้นเหนือหัว", "ลงน้ำหนักเบา ๆ ที่ปลายเท้า เข่างอรับแรง"],
+    "steps_en": ["Stand with feet together and arms at your sides", "Jump the feet apart while raising the arms overhead", "Land softly through the balls of the feet with soft knees"],
+    "mistake_th": "ลงส้นเท้ากระแทก — ลงเบา ๆ ที่ปลายเท้าเสมอ",
+    "mistake_en": "Landing hard on the heels — always land softly on the balls of the feet"
+  },
+  "ex_mob_cat_cow": {
+    "steps_th": ["คุกเข่าสี่ขา มือใต้ไหล่ เข่าใต้สะโพก", "หายใจเข้า แอ่นหลังเงยหน้าขึ้น", "หายใจออก โก่งหลังเก็บคาง ทำช้า ๆ"],
+    "steps_en": ["On all fours, hands under shoulders and knees under hips", "Inhale and arch, lifting the chest and gaze", "Exhale and round the spine, tucking the chin — move slowly"],
+    "mistake_th": "ทำเร็วเกินจนไม่ได้ยืด — ให้ช้าตามจังหวะหายใจ",
+    "mistake_en": "Rushing so nothing actually mobilises — move at the pace of your breath"
+  },
+  "ex_mob_hip_flexor": {
+    "steps_th": ["คุกเข่าข้างหนึ่ง อีกขาตั้งไปข้างหน้า", "เก็บก้นเข้าก่อน (ไม่แอ่นหลัง)", "ดันสะโพกไปหน้าเบา ๆ จนรู้สึกตึงหน้าต้นขา ค้างไว้"],
+    "steps_en": ["Kneel on one knee with the other foot forward", "Tuck the pelvis under first so the back does not arch", "Gently press the hips forward until you feel a stretch at the front of the thigh, and hold"],
+    "mistake_th": "แอ่นหลังแทนที่จะยืดสะโพก — เก็บก้นเข้าก่อนเสมอ",
+    "mistake_en": "Arching the back instead of stretching the hip — always tuck the pelvis first"
+  },
+  "ex_mob_thoracic_rotation": {
+    "steps_th": ["คุกเข่าสี่ขา วางมือหนึ่งไว้หลังหู", "หมุนศอกขึ้นเปิดอกไปทางเพดาน", "หมุนจากอก ไม่ใช่จากเอว แล้วกลับช้า ๆ"],
+    "steps_en": ["On all fours, place one hand behind your ear", "Rotate that elbow up, opening the chest towards the ceiling", "Rotate from the upper back, not the lower back, then return slowly"],
+    "mistake_th": "บิดจากเอว — ให้สะโพกนิ่งแล้วหมุนเฉพาะช่วงอก",
+    "mistake_en": "Twisting from the waist — keep the hips still and rotate the upper back only"
+  },
+  "ex_mob_hamstring_stretch": {
+    "steps_th": ["ยืนวางส้นเท้าข้างหนึ่งบนขั้นเตี้ย ปลายเท้าชี้ขึ้น", "หลังตรง ก้มจากสะโพก ไม่ใช่งอหลัง", "ค้างไว้ หายใจลึก ๆ แล้วสลับข้าง"],
+    "steps_en": ["Place one heel on a low step with the toes pointing up", "Keep a flat back and hinge from the hips, not by rounding the spine", "Hold, breathe deeply, then switch sides"],
+    "mistake_th": "งอหลังเพื่อเอื้อมให้ต่ำ — หลังตรงสำคัญกว่าความลึก",
+    "mistake_en": "Rounding the back to reach lower — a flat back matters more than depth"
+  },
+  "ex_bw_wall_sit": {
+    "steps_th": ["พิงหลังกับผนัง เลื่อนลงจนเข่าทำมุม 90 องศา", "เข่าอยู่เหนือข้อเท้า ไม่เลยปลายเท้า", "ค้างไว้ หายใจปกติ นับ reps เป็นวินาที"],
+    "steps_en": ["Back against the wall, slide down until the knees are at 90 degrees", "Knees stacked over the ankles, not past the toes", "Hold and breathe normally — reps count as seconds"],
+    "mistake_th": "กลั้นหายใจ — หายใจเข้าออกสม่ำเสมอตลอดที่ค้าง",
+    "mistake_en": "Holding your breath — keep breathing steadily through the hold"
+  },
+  "ex_db_farmer_carry": {
+    "steps_th": ["ถือดัมเบลข้างลำตัวทั้งสองข้าง", "ยืดตัวตรง ไหล่ลง เกร็งท้องเบา ๆ", "เดินช้า ๆ เป็นเส้นตรง นับ reps เป็นรอบ"],
+    "steps_en": ["Hold a dumbbell in each hand at your sides", "Stand tall, shoulders down and back, abs lightly braced", "Walk slowly in a straight line — reps count as laps"],
+    "mistake_th": "ห่อไหล่ไปหน้าเพราะหนักเกิน — ลดน้ำหนักลงแล้วยืดตัวตรง",
+    "mistake_en": "Shoulders rounding forward because it is too heavy — go lighter and stand tall"
+  }
+}

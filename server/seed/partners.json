@@ -1,0 +1,98 @@
+[
+  {
+    "id": "p_ari_womens_lift",
+    "name": "Ari Strength Studio",
+    "area": "Ari",
+    "price_tier": 2,
+    "beginner_friendly": 1,
+    "tags": ["ladies-hours", "small-group", "pt-included", "beginner-course"],
+    "lat": 13.7797,
+    "lng": 100.5445,
+    "note": "คลาสกลุ่มเล็ก 6 คน มีคอร์สปูพื้นฐาน 4 สัปดาห์สำหรับมือใหม่ เทรนเนอร์ผู้หญิงทุกคลาสช่วงเย็น",
+    "note_en": "Small groups of six, a 4-week foundations course for beginners, and women trainers on every evening class."
+  },
+  {
+    "id": "p_sathorn_boutique",
+    "name": "Sathorn Move Lab",
+    "area": "Sathorn",
+    "price_tier": 3,
+    "beginner_friendly": 1,
+    "tags": ["small-group", "pt-included", "shower", "towel-service"],
+    "lat": 13.7208,
+    "lng": 100.5291,
+    "note": "สตูดิโอบูทีค เน้นฟอร์ม มีเซสชันแนะนำฟรีครั้งแรก เหมาะกับคนออฟฟิศแถวสาทร",
+    "note_en": "Boutique studio focused on form, with a free intro session. Handy if you work around Sathorn."
+  },
+  {
+    "id": "p_ladprao_community",
+    "name": "Ladprao Community Gym",
+    "area": "Ladprao",
+    "price_tier": 1,
+    "beginner_friendly": 1,
+    "tags": ["budget", "ladies-hours", "walk-in"],
+    "lat": 13.8161,
+    "lng": 100.5601,
+    "note": "ยิมชุมชนราคาย่อมเยา มีช่วงเวลาเฉพาะผู้หญิง 09:00-12:00 จันทร์-ศุกร์ อุปกรณ์พื้นฐานครบ",
+    "note_en": "Affordable community gym with women-only hours 09:00-12:00 Mon-Fri and all the basic equipment."
+  },
+  {
+    "id": "p_thonglor_pilates",
+    "name": "Thonglor Reform Pilates",
+    "area": "Thonglor",
+    "price_tier": 3,
+    "beginner_friendly": 1,
+    "tags": ["small-group", "low-impact", "postpartum-friendly"],
+    "lat": 13.7246,
+    "lng": 100.5822,
+    "note": "พิลาทิสรีฟอร์มเมอร์ แรงกระแทกต่ำ มีคลาสสำหรับคุณแม่หลังคลอด จองล่วงหน้าผ่านแอป",
+    "note_en": "Reformer Pilates, low impact, with postpartum classes. Book ahead through their app."
+  },
+  {
+    "id": "p_ratchada_24h",
+    "name": "Ratchada Fit 24",
+    "area": "Ratchada",
+    "price_tier": 2,
+    "beginner_friendly": 0,
+    "tags": ["24h", "machines", "budget"],
+    "lat": 13.7679,
+    "lng": 100.5745,
+    "note": "เปิด 24 ชม. เครื่องเยอะ แต่ช่วงเย็นคนแน่นและไม่มีคลาสสอนมือใหม่",
+    "note_en": "Open 24 hours with plenty of machines, but crowded in the evening and no beginner classes."
+  },
+  {
+    "id": "p_onnut_ladies",
+    "name": "On Nut Ladies Fitness",
+    "area": "On Nut",
+    "price_tier": 1,
+    "beginner_friendly": 1,
+    "tags": ["ladies-only", "beginner-course", "walk-in", "budget"],
+    "lat": 13.7056,
+    "lng": 100.6015,
+    "note": "ยิมผู้หญิงล้วน ใกล้ BTS อ่อนนุช มีเทรนเนอร์ประจำช่วยจัดโปรแกรมให้ฟรีครั้งแรก",
+    "note_en": "Women-only gym by BTS On Nut, with a free first programming session from the in-house trainer."
+  },
+  {
+    "id": "p_bangna_family",
+    "name": "Bangna Family Health Club",
+    "area": "Bangna",
+    "price_tier": 2,
+    "beginner_friendly": 1,
+    "tags": ["pool", "small-group", "parking"],
+    "lat": 13.6684,
+    "lng": 100.6045,
+    "note": "มีสระว่ายน้ำและคลาสกลุ่ม ที่จอดรถสะดวก เหมาะกับคนที่ขับรถมา",
+    "note_en": "Pool plus group classes, with easy parking if you drive."
+  },
+  {
+    "id": "p_silom_express",
+    "name": "Silom Express Gym",
+    "area": "Silom",
+    "price_tier": 2,
+    "beginner_friendly": 0,
+    "tags": ["machines", "24h", "shower"],
+    "lat": 13.7279,
+    "lng": 100.5341,
+    "note": "ยิมเน้นเครื่อง ไม่มีคลาสมือใหม่ เหมาะกับคนที่รู้โปรแกรมตัวเองแล้ว",
+    "note_en": "Machine-focused gym with no beginner classes — better once you already know your programme."
+  }
+]

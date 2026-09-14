@@ -1,0 +1,44 @@
+name: Deploy server to Cloudflare Workers
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'server/**'
+      - '.github/workflows/deploy-worker.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run -w server typecheck
+      - run: npm run -w server test
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+
+      - name: Deploy worker
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: server
+          # LINE_CHANNEL_SECRET / LINE_CHANNEL_ACCESS_TOKEN are set once with
+          # `wrangler secret put`. ANTHROPIC_API_KEY is deliberately NOT set:
+          # without it the hosted demo stays on the zero-token mock engine.
+          command: deploy

@@ -1,0 +1,14 @@
+{
+  "weight_kg": [
+    { "date": "2026-08-16", "value": 58.4 },
+    { "date": "2026-08-23", "value": 58.1 },
+    { "date": "2026-08-30", "value": 58.2 },
+    { "date": "2026-09-06", "value": 57.8 },
+    { "date": "2026-09-13", "value": 57.6 }
+  ],
+  "measurements": [
+    { "label_th": "รอบเอว", "label_en": "Waist", "value": 71.5, "unit": "cm", "delta": -1.2 },
+    { "label_th": "รอบสะโพก", "label_en": "Hips", "value": 94.0, "unit": "cm", "delta": -0.5 },
+    { "label_th": "รอบแขน", "label_en": "Arm", "value": 27.8, "unit": "cm", "delta": 0.4 }
+  ]
+}

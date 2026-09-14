@@ -1,0 +1,14 @@
+{
+  "id": "mind",
+  "display_name": "Mind",
+  "line_user_id": null,
+  "goal": "strength",
+  "days_per_week": 3,
+  "session_minutes": 45,
+  "equipment": ["dumbbell", "treadmill", "bodyweight", "mat"],
+  "experience": "beginner",
+  "life_stage": "none",
+  "language": "th",
+  "coach_tone": "gentle",
+  "motivation": "อยากแข็งแรงพอจะอุ้มลูกได้โดยไม่ปวดหลัง"
+}

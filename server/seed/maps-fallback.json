@@ -1,0 +1,10 @@
+{
+  "disclaimer_th": "ผลลัพธ์นี้มาจากการค้นหาทั่วไป ยังไม่ผ่านการตรวจสอบว่าเป็นมิตรกับมือใหม่",
+  "disclaimer_en": "These come from a generic search and are NOT beginner-vetted by FitHer.",
+  "venues": [
+    { "name": "Fitness First — Central Rama 9", "area": "Rama 9", "note": "เชนใหญ่ อุปกรณ์ครบ คนเยอะช่วงเย็น", "note_en": "Large chain, full equipment, busy in the evening." },
+    { "name": "We Fitness Society — The Mall", "area": "Bangkapi", "note": "มีคลาสกลุ่มหลากหลาย สมัครรายปี", "note_en": "Lots of group classes, annual membership." },
+    { "name": "Jetts Fitness 24 Hours", "area": "Multiple", "note": "เปิด 24 ชม. ไม่มีคลาสสอนมือใหม่", "note_en": "Open 24 hours, no beginner classes." },
+    { "name": "Virgin Active", "area": "Sukhumvit", "note": "ราคาสูง สิ่งอำนวยความสะดวกครบ", "note_en": "Premium pricing, full facilities." }
+  ]
+}

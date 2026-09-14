@@ -1,0 +1,5 @@
+[
+  { "id": "ch1", "title_th": "ออกกำลัง 3 ครั้งสัปดาห์นี้", "title_en": "3 workouts this week", "progress": 2, "target": 3, "unit_th": "ครั้ง", "unit_en": "workouts", "badge": "🔥", "state": "active", "tint": "#FDECE4" },
+  { "id": "ch2", "title_th": "เดินสะสม 20,000 ก้าว", "title_en": "Walk 20,000 steps", "progress": 13400, "target": 20000, "unit_th": "ก้าว", "unit_en": "steps", "badge": "👟", "state": "active", "tint": "#E7F1EA" },
+  { "id": "ch3", "title_th": "เช็คอินครบ 4 สัปดาห์", "title_en": "4 weekly check-ins", "progress": 4, "target": 4, "unit_th": "สัปดาห์", "unit_en": "weeks", "badge": "🏅", "state": "earned", "tint": "#F1EEF9" }
+]
