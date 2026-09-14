@@ -170,6 +170,7 @@ api.post('/chat', async (c) => {
 api.patch('/user/:userId', async (c) => {
   const storage = c.get('storage');
   const body = await c.req.json<{
+    display_name?: string;
     goal?: string; days_per_week?: number; session_minutes?: number;
     equipment?: string[]; experience?: string; life_stage?: string; language?: string;
     coach_tone?: string; tone_note?: string; motivation?: string;
@@ -180,6 +181,7 @@ api.patch('/user/:userId', async (c) => {
   }>();
 
   const updated = await storage.updateUserProfile(c.req.param('userId'), {
+    display_name: body.display_name?.trim() ? body.display_name.trim().slice(0, 40) : undefined,
     goal: body.goal,
     days_per_week: body.days_per_week,
     session_minutes: body.session_minutes,

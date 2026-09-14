@@ -18,6 +18,8 @@ export default function PlanTab({ state, open }: TabProps) {
     );
   }
 
+  const done = plan.sessions.filter((s) => s.state === 'done').length;
+
   // Completion % per week from check-ins, for the weeks 1-4 progress strip.
   const weeks = [1, 2, 3, 4].map((w) => ({
     week: w,
@@ -27,22 +29,20 @@ export default function PlanTab({ state, open }: TabProps) {
 
   return (
     <main className="page">
-      <div className="row">
-        <div className="col grow">
-          <span className="subtitle">{t.weekN(active.week_number)}</span>
-          <span style={{ fontSize: 20, fontWeight: 800, letterSpacing: '-.02em' }}>{t.yourPlan}</span>
+      <section className="plan-hero">
+        <span className="eyebrow">{t.weekN(active.week_number)}</span>
+        <h2>{t.yourPlan}</h2>
+        <div className="pill-row">
+          <span className="chip brand">{t.totalSets(totalSets(plan))}</span>
+          <span className="chip brand">{t.nDays(plan.sessions.length)}</span>
+          {done > 0 && <span className="chip ok">✓ {done}/{plan.sessions.length}</span>}
         </div>
-        <span className="chip brand">{t.totalSets(totalSets(plan))}</span>
-      </div>
-
-      {/* why this week looks like this */}
-      {(active.why_th || active.why_en) && (
-        <div className="why">
-          <div className="label">{t.whyLabel}</div>
-          <p>{pick(active.why_th, active.why_en)}</p>
-          <p className="en">{pick(active.why_en, active.why_th)}</p>
-        </div>
-      )}
+        {(active.why_th || active.why_en) && (
+          <p style={{ margin: '14px 0 0', fontSize: 13.5, lineHeight: 1.6, color: 'var(--ink)' }}>
+            {pick(active.why_th, active.why_en)}
+          </p>
+        )}
+      </section>
 
       <div className="seg">
         <button aria-pressed>{t.viewList}</button>

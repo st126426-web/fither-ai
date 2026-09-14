@@ -6,6 +6,7 @@ import {
   api, equipmentLabel, eventLabel, experienceLabel, goalLabel, lifeStageLabel, toneLabel,
 } from '../lib/api.ts';
 import { useI18n, type Lang } from '../lib/i18n.tsx';
+import { ACCENTS, useTheme, type ThemeMode } from '../lib/theme.tsx';
 
 const GOALS = ['strength', 'fat_loss', 'energy', 'habit'];
 const DAYS_OPTS = [2, 3, 4, 5];
@@ -20,8 +21,10 @@ export default function Profile(
 ) {
   const toast = useComingSoon();
   const { t, lang, setLang, pick } = useI18n();
+  const { mode, accent, setMode, setAccent } = useTheme();
   const u = state?.user;
 
+  const [name, setName] = useState(u?.display_name ?? '');
   const [goal, setGoal] = useState(u?.goal ?? 'strength');
   const [days, setDays] = useState(u?.days_per_week ?? 3);
   const [minutes, setMinutes] = useState(u?.session_minutes ?? 45);
@@ -44,6 +47,7 @@ export default function Profile(
     setSaving(true);
     try {
       await api.updateProfile(userId, {
+        display_name: name.trim() || undefined,
         goal, days_per_week: days, session_minutes: minutes,
         equipment, experience, life_stage: lifeStage, coach_tone: coachTone, language,
       });
@@ -76,6 +80,18 @@ export default function Profile(
             <SectionHead title={t.trainingProfile} sub="LIVE" />
             <Card>
               <div className="card-pad col" style={{ gap: 16 }}>
+                <div className="field">
+                  <label htmlFor="pf-name">{t.fName}</label>
+                  <input
+                    id="pf-name"
+                    className="input"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder={t.fNamePlaceholder}
+                    maxLength={40}
+                  />
+                </div>
+
                 <div className="field">
                   <label>{t.fGoal}</label>
                   <div className="optrow">
@@ -297,6 +313,42 @@ export default function Profile(
                 ) : (
                   <span className="body">{t.noEvents}</span>
                 )}
+              </div>
+            </Card>
+          </section>
+
+          {/* Appearance — local to this device, no server round-trip */}
+          <section>
+            <SectionHead title={t.appearance} />
+            <Card>
+              <div className="card-pad col" style={{ gap: 16 }}>
+                <div className="field">
+                  <label>{t.themeMode}</label>
+                  <div className="seg">
+                    {(['system', 'light', 'dark'] as ThemeMode[]).map((m) => (
+                      <button key={m} aria-pressed={mode === m} onClick={() => setMode(m)}>
+                        {m === 'system' ? t.themeSystem : m === 'light' ? t.themeLight : t.themeDark}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="field">
+                  <label>{t.themeAccent}</label>
+                  <div className="swatches">
+                    {ACCENTS.map((a) => (
+                      <button
+                        key={a.id}
+                        className="swatch"
+                        style={{ background: a.swatch }}
+                        aria-pressed={accent === a.id}
+                        aria-label={t.accentNames[a.id] ?? a.id}
+                        title={t.accentNames[a.id] ?? a.id}
+                        onClick={() => setAccent(a.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
               </div>
             </Card>
           </section>

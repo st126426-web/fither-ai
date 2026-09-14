@@ -1,4 +1,5 @@
 import { useI18n, type Lang } from '../lib/i18n.tsx';
+import { useTheme } from '../lib/theme.tsx';
 
 /**
  * Public front door — no sign-in, no API calls. Everything here renders from
@@ -6,6 +7,7 @@ import { useI18n, type Lang } from '../lib/i18n.tsx';
  */
 export default function Landing({ onEnter }: { onEnter: () => void }) {
   const { t, lang, setLang } = useI18n();
+  const { mode, setMode } = useTheme();
   const L = t.landing;
 
   return (
@@ -16,6 +18,13 @@ export default function Landing({ onEnter }: { onEnter: () => void }) {
           <span>FitHer<span className="lp-ai">AI</span></span>
         </div>
         <div className="row" style={{ gap: 8 }}>
+          <button
+            className="iconbtn"
+            aria-label="Toggle dark mode"
+            onClick={() => setMode(isDark(mode) ? 'light' : 'dark')}
+          >
+            {isDark(mode) ? '☀' : '☾'}
+          </button>
           <LangToggle lang={lang} setLang={setLang} />
           <button className="btn sm" onClick={onEnter}>{L.nav}</button>
         </div>
@@ -106,6 +115,14 @@ export default function Landing({ onEnter }: { onEnter: () => void }) {
       </footer>
     </div>
   );
+}
+
+/** "system" resolves against the OS so the icon always shows the way out. */
+function isDark(mode: string): boolean {
+  if (mode === 'dark') return true;
+  if (mode === 'light') return false;
+  return typeof window !== 'undefined'
+    && window.matchMedia?.('(prefers-color-scheme: dark)').matches;
 }
 
 export function LangToggle({ lang, setLang }: { lang: Lang; setLang: (l: Lang) => void }) {
