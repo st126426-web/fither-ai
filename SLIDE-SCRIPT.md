@@ -218,9 +218,19 @@ open on a second tab before you start.
 
 **4. Reset before you present:** `npm run demo:reset -- --onboarding` puts Mind
 back to step zero. If you skip this, she already has a plan and the agent will
-talk about *that* instead of onboarding — which reads as a broken demo. (Heads
-up: the server currently running already has a plan saved for Mind from a test
-message, so this reset is not optional.)
+talk about *that* instead of onboarding — which reads as a broken demo.
+
+The reset now survives a server restart, and the server prints the state it will
+open in, so you can check it off the screen instead of finding out in front of
+the room:
+
+```
+  FitHer AI — mode=local engine=agent-sdk storage=sqlite(./data/fither.db)
+  Demo state onboarding — she will be asked the first question
+```
+
+If that line says *already onboarded*, run the reset and reload. For the hosted
+build the equivalent is `curl -X POST https://fither-ai.fither.workers.dev/api/demo-reset/mind`.
 
 ---
 

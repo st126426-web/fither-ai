@@ -9,10 +9,10 @@
     "dev:local": "npm run -w server dev",
     "dev:web": "npm run -w web dev",
     "build": "npm run -w web build",
-    "test": "npm run -w server test",
+    "test": "npm run -w server test --",
     "seed": "npm run -w server seed",
-    "demo:reset": "npm run -w server demo:reset",
-    "sim": "npm run -w server sim",
+    "demo:reset": "npm run -w server demo:reset --",
+    "sim": "npm run -w server sim --",
     "deploy:worker": "npm run -w server deploy"
   }
 }

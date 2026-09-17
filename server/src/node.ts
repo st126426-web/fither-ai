@@ -5,6 +5,7 @@ import { assertLocalAuthSanity, loadConfig } from './config.ts';
 import { createApp } from './index.ts';
 import { registerNodeEngines } from './engine/node-engines.ts';
 import { seedDatabase } from './lib/bootstrap.ts';
+import { MIND } from './lib/seed.ts';
 import { SqliteStorage } from './storage/sqlite.ts';
 
 const cfg = loadConfig(process.env);
@@ -14,8 +15,17 @@ assertLocalAuthSanity(cfg);
 // rather than in shared code — see registerNodeEngines.
 registerNodeEngines();
 
+// Seed Mind only into a database that does not exist yet.
+//
+// This used to run unconditionally, which quietly undid `demo:reset
+// --onboarding`: the reset removes her user row, the next boot put it straight
+// back, and the demo opened on a finished plan instead of the first question.
+// `tsx watch` restarts on every file save, so it could also happen in the
+// middle of preparing. A database that already exists is somebody's state —
+// the boot sequence has no business overwriting it.
+const firstRun = !existsSync(cfg.sqlitePath);
 const storage = new SqliteStorage(cfg.sqlitePath);
-await seedDatabase(storage, { includeUser: true });
+await seedDatabase(storage, { includeUser: firstRun });
 
 const webUrl = process.env.WEB_URL || `http://localhost:${cfg.port}/`;
 const app = createApp({ storage, cfg, webUrl });
@@ -36,8 +46,20 @@ if (hasWeb) {
   app.get('/app/', (c) => c.redirect('/'));
 }
 
+// Which state the demo will actually open in. Reading this off the screen
+// beats discovering it from the first reply in front of an audience.
+const mind = await storage.getUser(MIND.id);
+const activePlan = mind ? await storage.getActivePlan(MIND.id) : null;
+const demoState = !mind
+  ? 'onboarding — she will be asked the first question'
+  : activePlan
+    ? `already onboarded, week ${activePlan.week_number} plan active`
+    : 'profile set, no plan yet';
+
 console.log(
   `\n  FitHer AI — mode=${cfg.mode} engine=${cfg.engine} storage=sqlite(${cfg.sqlitePath})\n`
+  + `  Demo state ${demoState}\n`
+  + (mind ? '             reset with: npm run demo:reset -- --onboarding\n' : '')
   + `  API        http://localhost:${cfg.port}\n`
   + `  Webhook    http://localhost:${cfg.port}/webhook/line\n`
   + `  Simulator  npm run -w server sim\n`
