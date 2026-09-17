@@ -170,6 +170,29 @@ Two more surfaced while testing a user who *declines* the optional questions:
   the generic error message. It now produces a short acknowledgement, and only a
   genuine failure shows an error.
 
+Three more surfaced while re-walking the demo end to end:
+
+- **The scripts were never running the engine they reported.** Only `src/node.ts`
+  called `registerEngineFactory`, so `COACH_ENGINE=agent-sdk npm run sim:onboard`
+  fell through to the portable factory, got `MockEngine`, and printed
+  `engine=agent-sdk` on every line while running the keyword engine. Two days of
+  "the AI gives weird answers" were the keyword engine wearing the AI's name tag.
+  Registration now lives in `engine/node-engines.ts`, every Node entry point
+  calls it, and asking the portable factory for `agent-sdk` **throws** instead of
+  quietly substituting. A wrong answer you can see beats a wrong answer you
+  cannot.
+- **The agent narrated instead of speaking.** One turn shipped *"I have all the
+  required info now and will wait for her response… Let me wait for her reply"*
+  straight into the chat bubble. Everything the agent writes is sent verbatim, so
+  the prompt now says exactly that, and bans third-person, intention-announcing
+  and tool-name-dropping replies.
+- **A silent turn could strand her one message short of a plan.** The turn that
+  completes her profile is the one the agent is most likely to end without text,
+  and the template fallback sat out because it judged "still onboarding" from the
+  state at the *start* of the turn. It now judges from the state after it, and
+  fires only when the agent genuinely said nothing — a turn spent asking her the
+  optional question is left alone.
+
 Every one of those rejections is logged to `events`, so the failure modes above
 are inspectable rather than invisible.
 
@@ -294,6 +317,39 @@ npm run dev:local     # agent-sdk — free text gets a real answer, costs agent 
 it reads her sentences, calls `save_profile`, and asks about what is missing. A
 hosted demo therefore still costs **zero tokens** and still accepts typed
 answers.
+
+### Onboarding cannot dead-end
+
+Keyword extraction will always miss something. "I want to get in shape" matched
+none of the four goal patterns, and the engine's answer to a miss was to ask the
+identical question again — forever, with no way out but the exact magic word.
+Broader keyword lists shrink that set; they cannot empty it. So the guarantee is
+structural rather than lexical: **every required field escalates, and every
+escalation ends.**
+
+| Times asked | What she gets |
+| --- | --- |
+| 1st | The question, in the coach's own words |
+| 2nd | The same question plus tappable choices — one per valid value |
+| 3rd | No question. A safe default is assumed, said out loud, and onboarding moves on |
+
+The defaults are the smallest week we would give anyone (habit, 3 days, 30 min,
+bodyweight, beginner, balanced), every one is announced in the reply — *"I
+wasn't sure, so I've assumed 3 days a week — you can change that any time"* —
+and a field we guessed at stays open for her to correct later, which an answered
+one does not. The count comes from the conversation history both surfaces
+already share, so it survives moving between LINE and the web app.
+
+A choice chip carries `action=say&text=…` and re-enters the ordinary free-text
+path, so a tap and a typed sentence are the same event and there is no second
+parser to keep in sync. A test asserts every chip sends words the extractor can
+actually read — a chip the parser cannot parse is the dead end wearing a button.
+
+The live engines had the same trap by a different route: `save_profile`
+enum-checked `goal="get in shape"`, dropped it into `ignored`, and the agent
+asked again with the options listed. Near-misses now map to the enum, a genuine
+rejection names the allowed values so the agent can fix it on the same turn, and
+the system prompt forbids asking any question twice.
 
 ---
 

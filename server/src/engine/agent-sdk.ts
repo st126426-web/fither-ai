@@ -148,8 +148,21 @@ export class AgentSdkEngine implements CoachEngine {
         },
       })) {
         if (message.type === 'result') {
-          input_tokens = message.usage?.input_tokens ?? 0;
-          output_tokens = message.usage?.output_tokens ?? 0;
+          // The SDK reports cached input separately. Our system prompt and the
+          // exercise library are large and stable, so they are nearly always a
+          // cache hit — reading `input_tokens` alone reports 3–4 tokens for a
+          // turn that actually consumed thousands, and /api/usage then shows a
+          // cost that is off by orders of magnitude.
+          const u = message.usage as {
+            input_tokens?: number;
+            cache_creation_input_tokens?: number;
+            cache_read_input_tokens?: number;
+            output_tokens?: number;
+          } | undefined;
+          input_tokens = (u?.input_tokens ?? 0)
+            + (u?.cache_creation_input_tokens ?? 0)
+            + (u?.cache_read_input_tokens ?? 0);
+          output_tokens = u?.output_tokens ?? 0;
           if (message.subtype === 'success') {
             text = message.result;
           } else {
@@ -189,13 +202,15 @@ export class AgentSdkEngine implements CoachEngine {
       status: planRetriesExhausted ? 'validation_failed' : status,
       intent: req.intent,
       // A run can succeed having only called a tool, leaving no text. That is
-      // not a failure and must not be shown as one.
+      // not a failure and must not be shown as one — but the caller is told,
+      // because a filler line is not an answer to anything.
       reply: {
         text_th: clampReply(
           text
           || (status === 'ok' ? continuationFor(req.locale) : messageFor(failure, req.locale)),
         ),
       },
+      silent: !text,
       artifacts: {},
       trace: {
         engine: 'agent-sdk',

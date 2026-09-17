@@ -3,8 +3,15 @@ import {
   clampReply, coercePlan, findGuiltWords, loadNoteOk, hasBlockingFlag, scanRedFlags, totalSets,
   validatePlan, warningFlags, type ValidationContext,
 } from '../src/safety/validator.ts';
-import { extractProfile } from '../src/engine/mock.ts';
-import { missingFields, normaliseEquipment } from '../src/tools/profile.ts';
+import {
+  ONBOARD_CHOICES, asksSoFar, assumedEarlier, extractProfile,
+} from '../src/engine/mock.ts';
+import {
+  REQUIRED_FIELDS, missingFields, normaliseEquipment, saveProfile,
+} from '../src/tools/profile.ts';
+import { SqliteStorage } from '../src/storage/sqlite.ts';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { buildTemplatePlan } from '../src/engine/template-planner.ts';
 import { EXERCISES } from '../src/lib/seed.ts';
 import { detectLang, filterLibrary } from '../src/lib/util.ts';
@@ -13,6 +20,15 @@ import { normaliseArea } from '../src/tools/partner-search.ts';
 import type { Plan, ValidationCode } from '../src/engine/types.ts';
 
 const MIND_EQUIPMENT = ['dumbbell', 'treadmill', 'bodyweight', 'mat'];
+
+/** A throwaway database per test, so profile writes cannot leak between them. */
+let dbSeq = 0;
+async function freshStorage(): Promise<SqliteStorage> {
+  dbSeq += 1;
+  const storage = new SqliteStorage(join(tmpdir(), `fither-test-${process.pid}-${dbSeq}.db`));
+  await storage.init();
+  return storage;
+}
 
 function ctx(over: Partial<ValidationContext> = {}): ValidationContext {
   return {
@@ -267,8 +283,23 @@ describe('template planner', () => {
 
 describe('reply length', () => {
   it('clamps to the LINE limit', () => {
-    expect(clampReply('ก'.repeat(900)).length).toBeLessThanOrEqual(500);
+    expect(clampReply('ก'.repeat(6000)).length).toBeLessThanOrEqual(4900);
     expect(clampReply('สั้น')).toBe('สั้น');
+  });
+
+  // The old 500-char cap chopped ordinary replies mid-word, which read as the
+  // coach breaking off mid-sentence and was the whole reason chat felt broken.
+  it('leaves a normal conversational reply untouched', () => {
+    const reply = 'That is a big goal — a marathon! '.repeat(20).trim();
+    expect(reply.length).toBeGreaterThan(500);
+    expect(clampReply(reply)).toBe(reply);
+    expect(clampReply(reply).endsWith('…')).toBe(false);
+  });
+
+  it('breaks on a sentence end rather than mid-word when it must trim', () => {
+    const out = clampReply(`${'Run today. '.repeat(600)}xyzzy`, 60);
+    expect(out.endsWith('…')).toBe(true);
+    expect(out).toBe('Run today. Run today. Run today. Run today. Run today.…');
   });
 });
 
@@ -398,6 +429,54 @@ describe('context-aware red flags', () => {
   );
 });
 
+describe('red flags survive the answer "no"', () => {
+  // The coach asks "any injuries to watch out for?", so a negative is the most
+  // likely reply there is. Substring matching read "no injury" as an injury
+  // report and handed her to a human coach mid-onboarding.
+  it.each([
+    'np injury',
+    'no injury',
+    'no injuries at all',
+    'I have no pain anywhere',
+    "I don't have any injuries",
+    'not pregnant',
+    'ไม่มีบาดเจ็บค่ะ',
+    'ไม่เจ็บตรงไหนเลยค่ะ',
+    'เพิ่งคลอดลูก ไม่ได้ท้องแล้วค่ะ',
+  ])('does not flag %s', (text) => {
+    expect(hasBlockingFlag(scanRedFlags(text), 'onboard')).toBe(false);
+  });
+
+  // ท้อง ("pregnant") is a substring of หน้าท้อง ("abdomen"), so wanting to
+  // lose belly fat — one of the most common goals this product serves — was
+  // read as a pregnancy disclosure and blocked.
+  it.each([
+    'อยากลดหน้าท้องค่ะ',
+    'อยากให้หน้าท้องกระชับขึ้น',
+    'ท้องเสียเมื่อวาน',
+  ])('does not read %s as a pregnancy disclosure', (text) => {
+    expect(scanRedFlags(text).map((f) => f.code)).not.toContain('PREGNANCY');
+  });
+
+  it('still blocks a real disclosure that happens to contain a negation elsewhere', () => {
+    const flags = scanRedFlags('ไม่ได้ออกกำลังกายเลย ตอนนี้ท้อง 3 เดือนค่ะ');
+    expect(flags.map((f) => f.code)).toContain('PREGNANCY');
+    expect(hasBlockingFlag(flags, 'onboard')).toBe(true);
+  });
+
+  it('detects the plural "injuries", which substring matching missed entirely', () => {
+    expect(scanRedFlags('I have two old injuries').map((f) => f.code)).toContain('INJURY');
+  });
+
+  // Deliberate asymmetry: a false positive here costs one awkward handoff,
+  // a false negative could cost a great deal more.
+  it.each(['no chest pain', 'not dizzy', 'I am not depressed'])(
+    'never lets a negation suppress the acute signal in %s', (text) => {
+      expect(hasBlockingFlag(scanRedFlags(text), 'onboard')).toBe(true);
+    },
+  );
+});
+
 describe('profile extraction and normalisation', () => {
   it('pulls several fields out of one sentence', () => {
     const p = extractProfile('ว่างแค่เสาร์อาทิตย์ ครั้งละชั่วโมง');
@@ -479,5 +558,92 @@ describe('library staleness (the onboarding plan bug)', () => {
       const { allowed } = filterLibrary({ equipment: eq, experience: 'beginner', life_stage: 'none' });
       expect(allowed.length, eq.join('+')).toBeGreaterThan(5);
     }
+  });
+});
+
+describe('onboarding always moves forward', () => {
+  it('reads the openers that used to match nothing at all', () => {
+    // The bug: none of these hit a goal keyword, so the profile stayed empty
+    // and the same question came back every turn, forever.
+    expect(extractProfile('i want to get in shape').goal).toBeTruthy();
+    expect(extractProfile('just want to feel better').goal).toBeTruthy();
+    expect(extractProfile('อยากหุ่นดีขึ้นค่ะ').goal).toBeTruthy();
+    expect(extractProfile('want to be healthier').goal).toBeTruthy();
+  });
+
+  it('counts how many times a question has already been put to her', () => {
+    const asked = (n: number) => Array.from({ length: n }, () => ({
+      role: 'coach' as const, text: 'Lovely to meet you. What made you want to start training?',
+    }));
+    expect(asksSoFar([], 'goal')).toBe(0);
+    expect(asksSoFar(asked(1), 'goal')).toBe(1);
+    expect(asksSoFar(asked(2), 'goal')).toBe(2);
+    // A question about one field is not a question about another.
+    expect(asksSoFar(asked(2), 'coach_tone')).toBe(0);
+  });
+
+  it('remembers which values it guessed, so she can still correct them', () => {
+    const history = [
+      { role: 'coach' as const, text: "I wasn't sure, so I've assumed 3 days a week for now — you can change that any time." },
+    ];
+    expect(assumedEarlier(history).has('days_per_week')).toBe(true);
+    expect(assumedEarlier(history).has('goal')).toBe(false);
+    expect(assumedEarlier([]).size).toBe(0);
+  });
+
+  it('offers a tappable answer for every required field', () => {
+    // A field with no fallback choices is a field she can get stuck on.
+    for (const field of REQUIRED_FIELDS) {
+      const choices = ONBOARD_CHOICES[field];
+      expect(choices?.length, field).toBeGreaterThan(1);
+      for (const c of choices) {
+        expect(c.data).toMatch(/^action=say&text=/);
+        expect(c.label_th).toBeTruthy();
+        expect(c.label_en).toBeTruthy();
+      }
+    }
+  });
+
+  it('every choice chip sends words the extractor can actually read', () => {
+    // A chip the parser cannot read is the dead end wearing a button.
+    const reads: Record<string, (p: ReturnType<typeof extractProfile>) => unknown> = {
+      goal: (p) => p.goal,
+      days_per_week: (p) => p.days_per_week,
+      session_minutes: (p) => p.session_minutes,
+      equipment: (p) => p.equipment,
+      experience: (p) => p.experience,
+      coach_tone: (p) => p.coach_tone,
+    };
+    for (const field of REQUIRED_FIELDS) {
+      for (const c of ONBOARD_CHOICES[field]) {
+        const text = new URLSearchParams(c.data).get('text') ?? '';
+        expect(reads[field](extractProfile(text)), `${field}: "${text}"`).toBeTruthy();
+      }
+    }
+  });
+});
+
+describe('near-miss enum values are accepted, not bounced back as a question', () => {
+  it.each([
+    ['goal', 'get in shape'],
+    ['goal', 'lose weight'],
+    ['goal', 'toning'],
+    ['experience', 'newbie'],
+    ['experience', 'no experience'],
+    ['coach_tone', 'encouraging'],
+    ['coach_tone', 'tough'],
+  ])('maps %s="%s" instead of ignoring it', async (field, value) => {
+    const storage = await freshStorage();
+    const res = await saveProfile(storage, 'u_test', { [field]: value } as never);
+    expect(res.saved[field], `${field}="${value}"`).toBeTruthy();
+    expect(res.ignored).toBeUndefined();
+  });
+
+  it('tells the agent the allowed values when it truly cannot map one', async () => {
+    const storage = await freshStorage();
+    const res = await saveProfile(storage, 'u_test', { goal: 'purple' } as never);
+    expect(res.saved.goal).toBeUndefined();
+    expect(res.ignored?.[0]).toContain('strength');
+    expect(res.ignored?.[0]).toContain('fat_loss');
   });
 });

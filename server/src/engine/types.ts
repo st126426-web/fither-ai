@@ -138,7 +138,12 @@ export interface LibraryEntry {
 
 export type CoachStatus = 'ok' | 'blocked_safety' | 'validation_failed' | 'engine_error';
 
-export interface QuickReply { label: string; data: string }
+/**
+ * A tappable choice. Bilingual like every other string that reaches her, and
+ * `data` is an ordinary postback so LINE and the web app render it the same
+ * way — see `action=say` in the router.
+ */
+export interface QuickReply { label_th: string; label_en: string; data: string }
 
 export interface CoachReply {
   /** <= 500 chars, enforced after generation. */
@@ -215,6 +220,13 @@ export interface CoachResult {
     venue?: VenueRecommendation;
     flags?: SafetyFlag[];
   };
+  /**
+   * The engine ran fine but wrote nothing for her — it spent the turn on tool
+   * calls and stopped. `reply` then holds a filler line. The caller needs to
+   * know the difference: a turn where the coach chose to ask her something is
+   * not the same as a turn where the coach said nothing at all.
+   */
+  silent?: boolean;
   trace: CoachTrace;
 }
 

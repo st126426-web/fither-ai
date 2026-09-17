@@ -125,8 +125,17 @@ export async function runCoach(
   // Onboarding is exempt while the profile is still incomplete — the agent is
   // mid-conversation there, and shipping a plan built on unknowns would be
   // worse than asking one more question.
-  const stillAsking = req.intent === 'onboard' && (req.missing_fields?.length ?? 0) > 0;
-  const needsPlan = (req.intent === 'onboard' || req.intent === 'weekly_replan') && !stillAsking;
+  //
+  // Whether she is still mid-interview is a question about NOW, not about the
+  // state the turn started in: the agent can fill the last field and then stop
+  // without a word, and that silent turn is exactly where a missing plan shows.
+  // A turn where it actually said something is left alone — it may well be
+  // asking her the one optional question before it plans.
+  const afterUser = await storage.getUser(input.user_id);
+  const profileComplete = missingFields(afterUser).length === 0;
+  const startedComplete = (req.missing_fields?.length ?? 0) === 0;
+  const needsPlan = req.intent === 'weekly_replan'
+    || (req.intent === 'onboard' && profileComplete && (startedComplete || result.silent === true));
   if (needsPlan && !result.artifacts.plan) {
     result = await templateFallback(storage, req, result, tools);
   }
@@ -273,6 +282,18 @@ export type EngineFactory = (name: EngineName, cfg: Config) => CoachEngine | Pro
 const portableEngines: EngineFactory = (name, cfg) => {
   if (name === 'api') {
     return new ApiEngine({ apiKey: cfg.anthropicApiKey!, model: cfg.anthropicModel });
+  }
+  // Asking for the Agent SDK here means a Node entry point forgot to call
+  // registerNodeEngines(). Quietly handing back MockEngine would run the
+  // keyword engine for the rest of the session while every log line still
+  // read `engine=agent-sdk` — the failure is invisible exactly when it
+  // matters, mid-demo. Fail loudly instead.
+  if (name === 'agent-sdk') {
+    throw new Error(
+      'COACH_ENGINE=agent-sdk but no Node engine factory is registered. '
+      + 'Call registerNodeEngines() from src/engine/node-engines.ts at the entry point '
+      + '(it cannot be registered in shared code — the Worker bundle cannot host it).',
+    );
   }
   return new MockEngine();
 };

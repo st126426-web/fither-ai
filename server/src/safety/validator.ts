@@ -260,25 +260,109 @@ export function findGuiltWords(text: string): string[] {
   return rules.guilt_words.filter((w) => lower.includes(w.toLowerCase()));
 }
 
+/** "no", "not", "np", "don't" … — checked as whole tokens, not substrings. */
+const EN_NEGATORS = new Set([
+  'no', 'not', 'none', 'never', 'without', 'np', 'nope', 'nil', 'zero',
+  'nothing', 'dont', 'doesnt', 'didnt', 'havent', 'hasnt', 'isnt', 'wasnt', 'cant',
+]);
+const TH_NEGATORS = ['ไม่มี', 'ไม่ได้', 'ยังไม่', 'ไม่', 'ปราศจาก'];
+
+/** How close a negator has to sit to count as negating this term. */
+const EN_NEGATION_TOKENS = 3;
+const TH_NEGATION_CHARS = 12;
+
+const isAscii = (s: string) => !/[^ -]/.test(s);
+const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * Every index where `term` occurs as a word.
+ *
+ * Latin terms anchor to a word START but deliberately allow suffixes, so
+ * "sprain" still catches "sprained". Thai has no word spacing, so it falls back
+ * to a plain substring scan — which is exactly why `not_when` exists below.
+ */
+function* occurrences(hay: string, term: string): Generator<number> {
+  if (isAscii(term)) {
+    for (const m of hay.matchAll(new RegExp(`(?<![a-z])${escapeRe(term)}`, 'g'))) {
+      yield m.index!;
+    }
+    return;
+  }
+  for (let from = 0; ; ) {
+    const at = hay.indexOf(term, from);
+    if (at === -1) return;
+    yield at;
+    from = at + term.length;
+  }
+}
+
+/** "no injury", "np injury", "ไม่มีบาดเจ็บ" — she is answering, not reporting. */
+function isNegated(hay: string, at: number): boolean {
+  const before = hay.slice(Math.max(0, at - 40), at);
+
+  if (TH_NEGATORS.some((n) => before.slice(-TH_NEGATION_CHARS).includes(n))) return true;
+
+  const tokens = before.split(/[^a-z']+/).map((w) => w.replace(/'/g, '')).filter(Boolean);
+  return tokens.slice(-EN_NEGATION_TOKENS).some((w) => EN_NEGATORS.has(w));
+}
+
+/**
+ * A match that is really part of a longer, harmless word.
+ *
+ * This matters most for Thai: ท้อง means "pregnant" but is also inside หน้าท้อง
+ * ("abdomen") and ท้องเสีย ("diarrhoea"). Without this, "อยากลดหน้าท้อง" —
+ * "I want to lose belly fat", one of the most common goals this product exists
+ * to serve — was read as a pregnancy disclosure and handed to a human coach.
+ */
+function inExcludedContext(hay: string, at: number, term: string, notWhen: string[]): boolean {
+  return notWhen.some((phrase) => {
+    for (let from = 0; ; ) {
+      const p = hay.indexOf(phrase, from);
+      if (p === -1) return false;
+      if (at >= p && at + term.length <= p + phrase.length) return true;
+      from = p + 1;
+    }
+  });
+}
+
 /**
  * Runs on raw user text BEFORE any engine call, so safety never depends on
  * a model round-trip succeeding.
+ *
+ * Suppression is opt-in per rule, never global. Only rules the coach actually
+ * asks about — pain, injury, pregnancy — set `negatable`, because those are the
+ * ones where "no" is the expected answer. Acute signals (chest, dizziness,
+ * distress) always flag: "no chest pain" blocking is a cheap false positive,
+ * and missing a real one is not a mistake worth risking.
  */
 export function scanRedFlags(text: string | undefined | null): SafetyFlag[] {
   if (!text) return [];
   const lower = text.toLowerCase();
   const flags: SafetyFlag[] = [];
+
   for (const rule of rules.red_flags) {
+    const r = rule as typeof rule & { negatable?: boolean; not_when?: string[] };
+    const notWhen = r.not_when ?? [];
+
     for (const term of rule.terms) {
-      if (lower.includes(term.toLowerCase())) {
-        flags.push({
-          code: rule.code,
-          matched_term: term,
-          severity: rule.severity as 'block' | 'warn',
-          warn_intents: (rule as { warn_intents?: string[] }).warn_intents ?? [],
-        });
+      const t = term.toLowerCase();
+      let hit = false;
+
+      for (const at of occurrences(lower, t)) {
+        if (inExcludedContext(lower, at, t, notWhen)) continue;
+        if (r.negatable && isNegated(lower, at)) continue;
+        hit = true;
         break;
       }
+
+      if (!hit) continue;
+      flags.push({
+        code: rule.code,
+        matched_term: term,
+        severity: rule.severity as 'block' | 'warn',
+        warn_intents: (rule as { warn_intents?: string[] }).warn_intents ?? [],
+      });
+      break;
     }
   }
   return flags;
@@ -303,8 +387,31 @@ export function warningFlags(flags: SafetyFlag[], intent?: string): SafetyFlag[]
   return flags.filter((f) => f.severity !== 'block' || (intent && f.warn_intents?.includes(intent)));
 }
 
-/** LINE hard-caps messages; trim rather than let the send fail. */
+/**
+ * Last-resort guard against LINE rejecting an oversized message. LINE's real
+ * text cap is 5000 characters, and the adapter already slices at 4900, so this
+ * should essentially never fire — it used to sit at 500, which silently chopped
+ * ordinary coach replies mid-word ("…and we'l…") and read as the agent breaking
+ * off mid-sentence. Reply brevity is a prompt concern, not a validator one.
+ *
+ * When it does fire, prefer a sentence end, then a word break, so the trimmed
+ * reply still reads as a finished thought.
+ */
 export function clampReply(text: string, max = rules.reply.max_chars): string {
   const t = (text ?? '').trim();
-  return t.length <= max ? t : `${t.slice(0, max - 1)}…`;
+  if (t.length <= max) return t;
+
+  const head = t.slice(0, max - 1);
+  const floor = Math.floor(max * 0.6);
+  const sentenceEnd = Math.max(
+    head.lastIndexOf('. '), head.lastIndexOf('! '), head.lastIndexOf('? '), head.lastIndexOf('\n'),
+  );
+  if (sentenceEnd > floor) return `${t.slice(0, sentenceEnd + 1).trimEnd()}…`;
+
+  // Thai does not space between words, so this often finds nothing — the hard
+  // cut below is the correct fallback there rather than a bug.
+  const wordEnd = head.lastIndexOf(' ');
+  if (wordEnd > floor) return `${t.slice(0, wordEnd).trimEnd()}…`;
+
+  return `${head}…`;
 }

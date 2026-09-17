@@ -64,10 +64,24 @@ export async function routeChat(
       return respond(storage, cfg, userId, 'onboard', undefined, undefined);
     case 'find_gym':
       return respond(storage, cfg, userId, 'find_gym', text || 'อยากลองไปยิม', {});
+    // A tapped choice chip is her saying those words. It joins the ordinary
+    // free-text path rather than getting a parser of its own, so the engine
+    // cannot tell a tap from typing and there is nothing to keep in sync.
+    case 'say':
+      return freeText(storage, cfg, userId, params?.get('text')?.trim() ?? '');
     default: break;
   }
 
-  // --- free text ------------------------------------------------------
+  return freeText(storage, cfg, userId, text);
+}
+
+/** Everything she types, once the postback actions have had their say. */
+async function freeText(
+  storage: Storage,
+  cfg: Config,
+  userId: string,
+  text: string,
+): Promise<AgentMessage[]> {
   const user = await storage.getUser(userId);
   const missing = missingFields(user);
   const hasPlan = !!(await storage.getActivePlan(userId));
@@ -124,6 +138,7 @@ async function respond(
   });
 
   const head: AgentMessage = { text_th: result.reply.text_th, text_en: result.reply.text_en };
+  if (result.reply.quick_replies?.length) head.quick_replies = result.reply.quick_replies;
 
   const nextHistory = [...history];
   if (message) nextHistory.push({ role: 'user', text: message });

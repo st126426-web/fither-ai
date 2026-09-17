@@ -79,7 +79,8 @@
       "warn_intents": [
         "onboard"
       ],
-      "_comment": "Generic aches are the single most common reason women start training. Blocking onboarding on them makes the product unusable; a warning still records the flag and tells the agent to respond with care."
+      "_comment": "Generic aches are the single most common reason women start training. Blocking onboarding on them makes the product unusable; a warning still records the flag and tells the agent to respond with care.",
+      "negatable": true
     },
     {
       "code": "INJURY",
@@ -90,9 +91,11 @@
         "injured",
         "sprain",
         "strain",
-        "เคล็ด"
+        "เคล็ด",
+        "injuries"
       ],
-      "warn_intents": []
+      "warn_intents": [],
+      "negatable": true
     },
     {
       "code": "DIZZY",
@@ -116,7 +119,16 @@
         "pregnant",
         "pregnancy"
       ],
-      "warn_intents": []
+      "warn_intents": [],
+      "negatable": true,
+      "not_when": [
+        "หน้าท้อง",
+        "ท้องเสีย",
+        "ท้องผูก",
+        "ท้องอืด",
+        "กล้ามท้อง",
+        "ท้องฟ้า"
+      ]
     },
     {
       "code": "CHEST",
@@ -174,6 +186,6 @@
     "you let yourself"
   ],
   "reply": {
-    "max_chars": 500
+    "max_chars": 4900
   }
 }

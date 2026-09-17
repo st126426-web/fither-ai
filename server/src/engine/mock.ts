@@ -1,7 +1,8 @@
 import type {
   CoachEngine, CoachRequest, CoachResult, CoachTools, GymIntentPayload,
-  ProfileFields, UserStateResult,
+  ProfileFields, QuickReply, UserStateResult,
 } from './types.ts';
+import { REQUIRED_FIELDS, type RequiredField } from '../tools/profile.ts';
 import { buildTemplatePlan } from './template-planner.ts';
 import { clampReply } from '../safety/validator.ts';
 import { DAY_EN, DAY_TH, GOAL_EN, GOAL_TH } from '../lib/util.ts';
@@ -43,10 +44,12 @@ export class MockEngine implements CoachEngine {
       return { ...base, status: 'ok', reply: await this.gymReply(req, tools), trace: trace() };
     }
 
+    let assumed: RequiredField[] = [];
     if (req.intent === 'onboard') {
-      const asked = await this.onboardTurn(req, tools);
-      if (asked) return { ...base, status: 'ok', reply: asked, trace: trace() };
+      const turn = await this.onboardTurn(req, tools);
+      if (turn.reply) return { ...base, status: 'ok', reply: turn.reply, trace: trace() };
       // Nothing missing any more — fall through and build the plan.
+      assumed = turn.assumed;
     }
 
     if (req.intent === 'freeform') {
@@ -87,13 +90,14 @@ export class MockEngine implements CoachEngine {
 
     const tone = state.profile.coach_tone ?? 'balanced';
     const o = openerFor(tone);
+    const guess = assumedNoteShort(assumed);
     const th = req.intent === 'onboard'
-      ? `${o.th} จัดแผนสัปดาห์แรกให้แล้ว ${plan.sessions.length} วัน วันละไม่เกิน ${state.profile.session_minutes} นาที\n\nทำไมสัปดาห์นี้เป็นแบบนี้: ${why.th}`
+      ? `${o.th} จัดแผนสัปดาห์แรกให้แล้ว ${plan.sessions.length} วัน วันละไม่เกิน ${state.profile.session_minutes} นาที${guess ? `\n${guess.th}` : ''}\n\nทำไมสัปดาห์นี้เป็นแบบนี้: ${why.th}`
       : gentle
         ? `กลับมาเริ่มใหม่แบบเบา ๆ นะคะ สัปดาห์ที่ ${weekNumber} ลดปริมาณลงให้แล้ว\n\nทำไมสัปดาห์นี้เป็นแบบนี้: ${why.th}`
         : `แผนสัปดาห์ที่ ${weekNumber} พร้อมแล้วค่ะ\n\nทำไมสัปดาห์นี้เป็นแบบนี้: ${why.th}`;
     const en = req.intent === 'onboard'
-      ? `${o.en} Week 1 is ready — ${plan.sessions.length} days, up to ${state.profile.session_minutes} min each.\n\nWhy this week: ${why.en}`
+      ? `${o.en} Week 1 is ready — ${plan.sessions.length} days, up to ${state.profile.session_minutes} min each.${guess ? `\n${guess.en}` : ''}\n\nWhy this week: ${why.en}`
       : gentle
         ? `Restarting gently — week ${weekNumber} is lighter.\n\nWhy this week: ${why.en}`
         : `Week ${weekNumber} is ready.\n\nWhy this week: ${why.en}`;
@@ -119,15 +123,31 @@ export class MockEngine implements CoachEngine {
 
   /**
    * One turn of onboarding. Extracts what her message revealed, saves it, and
-   * returns the next question — or null when there is nothing left to ask.
+   * returns the next question — or a null reply when there is nothing left to
+   * ask and the caller should plan.
+   *
+   * The hard rule here is **forward progress**. Keyword extraction will always
+   * miss things ("I want to get in shape" matches none of the goal words), and
+   * the original version answered a miss by asking the identical question
+   * again, forever. Now every field escalates: ask, then ask with tappable
+   * choices, then assume a safe default and move on. Onboarding always ends in
+   * a plan, however she types.
    */
-  private async onboardTurn(req: CoachRequest, tools: CoachTools): Promise<CoachResult['reply'] | null> {
+  private async onboardTurn(
+    req: CoachRequest, tools: CoachTools,
+  ): Promise<{ reply: CoachResult['reply'] | null; assumed: RequiredField[] }> {
     const missing = new Set(req.missing_fields ?? []);
     const extracted = extractProfile(req.message ?? '');
 
-    // Only record what is still unknown. Keyword matching is greedy — without
-    // this, "ไม่เคยเล่นเวทเลย" re-detects the goal it already has and the
-    // acknowledgement parrots an answer from three turns ago.
+    // A value we assumed on her behalf is still open for correction. Without
+    // this, the filter below — which only records fields that are still
+    // missing — would make our own guess permanent the moment we made it, and
+    // "actually I can do 5 days" would go nowhere.
+    const guessed = assumedEarlier(req.history);
+
+    // Otherwise only record what is still unknown. Keyword matching is greedy —
+    // without this, "ไม่เคยเล่นเวทเลย" re-detects the goal it already has and
+    // the acknowledgement parrots an answer from three turns ago.
     const fresh: ProfileFields = {};
     for (const [k, v] of Object.entries(extracted)) {
       if (k === 'motivation') {
@@ -135,21 +155,53 @@ export class MockEngine implements CoachEngine {
         if (missing.has('goal')) fresh.motivation = v as string;
         continue;
       }
-      if (missing.has(k)) (fresh as Record<string, unknown>)[k] = v;
+      if (missing.has(k) || guessed.has(k as RequiredField)) {
+        (fresh as Record<string, unknown>)[k] = v;
+      }
     }
 
-    const result = await tools.save_profile({ user_id: req.user_id, ...fresh });
+    let result = await tools.save_profile({ user_id: req.user_id, ...fresh });
+    if (result.ready_to_plan) return { reply: null, assumed: [] };
 
-    if (result.ready_to_plan) return null;
-
-    const next = result.missing[0];
-    const q = QUESTION[next] ?? QUESTION.goal;
     const a = Object.keys(result.saved).length > 0 && req.message ? ackFor(result.saved) : null;
-    return say(
-      req,
-      clampReply(`${a ? `${a.th}\n\n` : ''}${q.th}`),
-      clampReply(`${a ? `${a.en}\n\n` : ''}${q.en}`),
-    );
+
+    // Anything she has already been asked about twice gets a safe default
+    // rather than a third identical question. Bounded by the field count, so
+    // this cannot spin.
+    const assumed: RequiredField[] = [];
+    for (let guard = 0; guard < REQUIRED_FIELDS.length; guard += 1) {
+      const field = result.missing[0] as RequiredField | undefined;
+      if (!field || asksSoFar(req.history, field) < 2) break;
+      result = await tools.save_profile({ user_id: req.user_id, ...DEFAULTS[field] });
+      assumed.push(field);
+      if (result.ready_to_plan) break;
+    }
+
+    if (result.ready_to_plan) return { reply: null, assumed };
+
+    const next = result.missing[0] as RequiredField;
+    const q = QUESTION[next] ?? QUESTION.goal;
+
+    // Second time of asking: she typed something the keyword engine could not
+    // read. Saying the same sentence again is the failure — offer the options
+    // instead, and be honest that picking one is the fast path.
+    const stuck = asksSoFar(req.history, next) >= 1;
+    const nudge = stuck ? NUDGE : null;
+    const note = assumed.length ? assumedNoteShort(assumed) : null;
+
+    const lines = (lang: 'th' | 'en') => [
+      a ? a[lang] : null,
+      note ? note[lang] : null,
+      `${q[lang]}${nudge ? ` ${nudge[lang]}` : ''}`,
+    ].filter(Boolean).join('\n\n');
+
+    return {
+      reply: {
+        ...say(req, clampReply(lines('th')), clampReply(lines('en'))),
+        quick_replies: stuck ? ONBOARD_CHOICES[next] : undefined,
+      },
+      assumed,
+    };
   }
 
   /**
@@ -267,21 +319,35 @@ Tell me any time if you want a gym nearby, or how the week is going.`);
 }
 
 // ── keyword extraction: the mock stand-in for the model ─────────────────
+/**
+ * Keyword tables. Order matters — the first table to match wins, so the more
+ * specific goal sits above the more general one.
+ *
+ * These will never cover everything a person can type, which is why
+ * `onboardTurn` no longer depends on them succeeding. They only decide whether
+ * she gets a plan in five turns or in seven. The plain-enum tokens at the end
+ * of each row are what the choice chips send, so a tap and a typed sentence
+ * travel the same path.
+ */
 const GOAL_WORDS: [RegExp, string][] = [
-  [/แข็งแรง|กล้ามเนื้อ|เวท|strength|strong|muscle|tone/i, 'strength'],
-  [/ลดไขมัน|ลดน้ำหนัก|ผอม|หุ่น|fat|lose weight|slim/i, 'fat_loss'],
-  [/มีแรง|เหนื่อยง่าย|พลังงาน|energy|stamina|fitness/i, 'energy'],
-  [/นิสัย|สม่ำเสมอ|เริ่มต้น|habit|consistent|routine/i, 'habit'],
+  [/ลดไขมัน|ลดน้ำหนัก|ลดพุง|ผอม|หุ่น|กระชับ|fat[ _]?loss|lose (weight|fat)|slim|lean|trim|tone up|in shape|fit into/i, 'fat_loss'],
+  [/แข็งแรง|กล้ามเนื้อ|เวท|ยกน้ำหนัก|strength|strong|muscle|tone|lift/i, 'strength'],
+  [/มีแรง|เหนื่อยง่าย|พลังงาน|สดชื่น|energy|stamina|fitness|fitter|endurance|keep up with/i, 'energy'],
+  [/นิสัย|สม่ำเสมอ|เริ่มต้น|วินัย|habit|consistent|routine|get started|stick with/i, 'habit'],
+  // Catch-all: she said she wants to change something but not what. "Healthier"
+  // and "get in shape" are the two most common openers and used to match
+  // nothing at all, which is what left the conversation asking forever.
+  [/สุขภาพ|ดูแลตัวเอง|ฟิต|healthy|healthier|get in shape|shape|feel better|better shape|look better/i, 'habit'],
 ];
 const EXPERIENCE_WORDS: [RegExp, string][] = [
-  [/ไม่เคย|มือใหม่|เพิ่งเริ่ม|never|beginner|new/i, 'beginner'],
-  [/เคย.*หยุด|หยุดไป|กลับมา|used to|stopped|returning|again/i, 'returning'],
-  [/ออกอยู่|ประจำ|สม่ำเสมอ|regular|currently|intermediate/i, 'intermediate'],
+  [/เคย.*หยุด|หยุดไป|กลับมา|ห่างไป|used to|stopped|returning|coming back|again|rusty/i, 'returning'],
+  [/ไม่เคย|มือใหม่|เพิ่งเริ่ม|ไม่เป็น|never|beginner|new|first time|no experience|from scratch/i, 'beginner'],
+  [/ออกอยู่|ประจำ|สม่ำเสมอ|regular|currently|intermediate|already train|i train/i, 'intermediate'],
 ];
 const TONE_WORDS: [RegExp, string][] = [
-  [/อ่อนโยน|ใจดี|ไม่กดดัน|เบา ?ๆ|gentle|soft|no pressure|easy on me/i, 'gentle'],
-  [/ดุ|เข้ม|ผลัก|กดดัน|ตรงไปตรงมา|firm|push|tough|strict|hard on me/i, 'firm'],
-  [/ปกติ|กลาง ?ๆ|balanced|normal|middle/i, 'balanced'],
+  [/อ่อนโยน|ใจดี|ไม่กดดัน|เบา ?ๆ|ค่อย ?ๆ|gentle|soft|no pressure|easy on me|kind|encourag/i, 'gentle'],
+  [/ดุ|เข้ม|ผลัก|กดดัน|ตรงไปตรงมา|firm|push|tough|strict|hard on me|direct|challenge me/i, 'firm'],
+  [/ปกติ|กลาง ?ๆ|ธรรมดา|balanced|normal|middle|in between|either/i, 'balanced'],
 ];
 const EQUIPMENT_WORDS: [RegExp, string][] = [
   [/ดัมเบล|dumbbell|weights/i, 'dumbbell'],
@@ -290,7 +356,7 @@ const EQUIPMENT_WORDS: [RegExp, string][] = [
   [/ยางยืด|resistance ?band/i, 'resistance_band'],
   [/ม้านั่ง|bench/i, 'bench'],
   [/เคทเทิล|kettlebell/i, 'kettlebell'],
-  [/ไม่มี(อะไร|เลย)|ตัวเปล่า|nothing|no equipment|bodyweight/i, 'bodyweight'],
+  [/ไม่มี(อะไร|เลย|อุปกรณ์)|ตัวเปล่า|nothing|no (equipment|gear|weights)|bodyweight|body ?weight/i, 'bodyweight'],
 ];
 
 export function extractProfile(message: string): ProfileFields {
@@ -354,6 +420,119 @@ const QUESTION: Record<string, { th: string; en: string }> = {
     en: 'Last one — how do you want me to talk to you? Gentle and no pressure, or direct and pushing a little?',
   },
 };
+
+/**
+ * How many times the coach has already put this question to her.
+ *
+ * The mock writes its questions verbatim from QUESTION, so the conversation
+ * history is a reliable record of what has been asked — no extra state, and it
+ * works identically on LINE and in the web app because both share one history.
+ */
+export function asksSoFar(history: CoachRequest['history'], field: RequiredField): number {
+  const q = QUESTION[field];
+  if (!q || !history?.length) return 0;
+  return history.filter(
+    (h) => h.role === 'coach' && (h.text.includes(q.th) || h.text.includes(q.en)),
+  ).length;
+}
+
+/**
+ * Fields the coach has already admitted to guessing at, read back out of what
+ * it told her. Every default is announced in the reply (see assumedNoteShort),
+ * so the transcript is the record — no extra state to keep in sync.
+ */
+export function assumedEarlier(history: CoachRequest['history']): Set<RequiredField> {
+  const out = new Set<RequiredField>();
+  for (const h of history ?? []) {
+    if (h.role !== 'coach') continue;
+    for (const f of REQUIRED_FIELDS) {
+      const l = ASSUMED_LABEL[f];
+      if (h.text.includes(l.th) || h.text.includes(l.en)) out.add(f);
+    }
+  }
+  return out;
+}
+
+const NUDGE = {
+  th: 'หรือแตะเลือกด้านล่างก็ได้ค่ะ',
+  en: 'Or just tap one below.',
+};
+
+/**
+ * Tappable answers, used once free text has failed to parse. Each `data`
+ * carries words the extractor above definitely recognises, so a tap travels
+ * the same path as typing — there is no second parser to keep in sync.
+ */
+export const ONBOARD_CHOICES: Record<RequiredField, QuickReply[]> = {
+  goal: [
+    { label_th: 'แข็งแรงขึ้น', label_en: 'Get stronger', data: 'action=say&text=strength' },
+    { label_th: 'ลดไขมัน', label_en: 'Lose fat', data: 'action=say&text=fat loss' },
+    { label_th: 'มีแรงมากขึ้น', label_en: 'More energy', data: 'action=say&text=energy' },
+    { label_th: 'สร้างนิสัย', label_en: 'Build the habit', data: 'action=say&text=habit' },
+  ],
+  days_per_week: [
+    { label_th: '2 วัน', label_en: '2 days', data: 'action=say&text=2 days' },
+    { label_th: '3 วัน', label_en: '3 days', data: 'action=say&text=3 days' },
+    { label_th: '4 วัน', label_en: '4 days', data: 'action=say&text=4 days' },
+  ],
+  session_minutes: [
+    { label_th: '20 นาที', label_en: '20 min', data: 'action=say&text=20 min' },
+    { label_th: '30 นาที', label_en: '30 min', data: 'action=say&text=30 min' },
+    { label_th: '45 นาที', label_en: '45 min', data: 'action=say&text=45 min' },
+    { label_th: '1 ชั่วโมง', label_en: '1 hour', data: 'action=say&text=60 min' },
+  ],
+  equipment: [
+    { label_th: 'ไม่มีเลย', label_en: 'Nothing', data: 'action=say&text=no equipment' },
+    { label_th: 'ดัมเบล', label_en: 'Dumbbells', data: 'action=say&text=dumbbell' },
+    { label_th: 'เสื่อ + ยางยืด', label_en: 'Mat + band', data: 'action=say&text=mat resistance band' },
+    { label_th: 'ลู่วิ่ง', label_en: 'Treadmill', data: 'action=say&text=treadmill' },
+  ],
+  experience: [
+    { label_th: 'ไม่เคยเลย', label_en: 'Never have', data: 'action=say&text=beginner' },
+    { label_th: 'เคยแล้วหยุดไป', label_en: 'Used to, stopped', data: 'action=say&text=returning' },
+    { label_th: 'ทำอยู่ประจำ', label_en: 'I train now', data: 'action=say&text=intermediate' },
+  ],
+  coach_tone: [
+    { label_th: 'อ่อนโยน ไม่กดดัน', label_en: 'Gentle, no pressure', data: 'action=say&text=gentle' },
+    { label_th: 'ปกติ', label_en: 'Balanced', data: 'action=say&text=balanced' },
+    { label_th: 'ตรงไปตรงมา ช่วยผลัก', label_en: 'Direct, push me', data: 'action=say&text=firm' },
+  ],
+};
+
+/**
+ * What we assume when she has been asked twice and we still do not know.
+ * Every one of these is the conservative choice — the smallest week we would
+ * be willing to give anyone — because a wrong guess here is corrected by her
+ * first check-in, while a third identical question ends the conversation.
+ */
+const DEFAULTS: Record<RequiredField, ProfileFields> = {
+  goal: { goal: 'habit' },
+  days_per_week: { days_per_week: 3 },
+  session_minutes: { session_minutes: 30 },
+  equipment: { equipment: ['bodyweight'] },
+  experience: { experience: 'beginner' },
+  coach_tone: { coach_tone: 'balanced' },
+};
+
+const ASSUMED_LABEL: Record<RequiredField, { th: string; en: string }> = {
+  goal: { th: 'เริ่มจากสร้างนิสัยก่อน', en: 'starting with the habit' },
+  days_per_week: { th: 'สัปดาห์ละ 3 วัน', en: '3 days a week' },
+  session_minutes: { th: 'ครั้งละ 30 นาที', en: '30 minutes a session' },
+  equipment: { th: 'ใช้น้ำหนักตัว', en: 'bodyweight only' },
+  experience: { th: 'เริ่มจากระดับมือใหม่', en: 'beginner level' },
+  coach_tone: { th: 'คุยแบบปกติ', en: 'a balanced tone' },
+};
+
+/** Never assume something about her silently — say it, and say it is editable. */
+function assumedNoteShort(assumed: RequiredField[]): { th: string; en: string } | null {
+  if (!assumed.length) return null;
+  const th = assumed.map((f) => ASSUMED_LABEL[f].th).join(' ');
+  const en = assumed.map((f) => ASSUMED_LABEL[f].en).join(', ');
+  return {
+    th: `ยังไม่แน่ใจเลยขอตั้งไว้ว่า ${th} ก่อนนะคะ แก้ได้ตลอดเลยค่ะ`,
+    en: `I wasn't sure, so I've assumed ${en} for now — you can change that any time.`,
+  };
+}
 
 function ackFor(saved: Record<string, unknown>): { th: string; en: string } {
   if (saved.goal) {

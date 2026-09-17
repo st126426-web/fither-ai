@@ -61,9 +61,49 @@ function clampInt(v: unknown, min: number, max: number): number | undefined {
   return Math.min(max, Math.max(min, n));
 }
 
+/**
+ * Near-misses that mean one of the enum values.
+ *
+ * A model told to map her words onto an enum mostly does, but "get in shape",
+ * "toning", "lose weight" and "newbie" come back often enough to matter — and
+ * a rejected value used to vanish into `ignored`, leaving the agent to ask the
+ * same question again with the options spelled out. That is the single most
+ * irritating thing this conversation can do, so the near-misses are accepted
+ * here instead.
+ */
+const ENUM_ALIASES: Record<string, string> = {
+  // goal
+  fat: 'fat_loss', fatloss: 'fat_loss', 'lose weight': 'fat_loss', 'weight loss': 'fat_loss',
+  'weight_loss': 'fat_loss', slim: 'fat_loss', lean: 'fat_loss', toning: 'fat_loss',
+  'get in shape': 'habit', shape: 'habit', health: 'habit', healthy: 'habit',
+  consistency: 'habit', routine: 'habit',
+  strong: 'strength', muscle: 'strength', 'build muscle': 'strength', tone: 'strength',
+  stamina: 'energy', endurance: 'energy', fitness: 'energy',
+  // experience
+  none: 'beginner', new: 'beginner', novice: 'beginner', newbie: 'beginner', never: 'beginner',
+  'no experience': 'beginner',
+  returned: 'returning', restarting: 'returning', 'used to': 'returning', rusty: 'returning',
+  regular: 'intermediate', advanced: 'intermediate', experienced: 'intermediate',
+  // coach_tone
+  soft: 'gentle', kind: 'gentle', encouraging: 'gentle', supportive: 'gentle',
+  normal: 'balanced', neutral: 'balanced', moderate: 'balanced', medium: 'balanced',
+  direct: 'firm', tough: 'firm', strict: 'firm', push: 'firm', pushy: 'firm', hard: 'firm',
+};
+
 function pickEnum(v: unknown, allowed: string[]): string | undefined {
   const s = String(v ?? '').trim().toLowerCase();
-  return allowed.includes(s) ? s : undefined;
+  if (allowed.includes(s)) return s;
+  const alias = ENUM_ALIASES[s] ?? ENUM_ALIASES[s.replace(/[\s_-]+/g, ' ')];
+  return alias && allowed.includes(alias) ? alias : undefined;
+}
+
+/**
+ * A rejection the agent can act on. `goal="in shape"` alone tells it nothing;
+ * naming the allowed values lets it correct itself on the same turn instead of
+ * re-interrogating her.
+ */
+function rejected(field: string, value: unknown, allowed: string[]): string {
+  return `${field}="${String(value)}" not recognised — use one of: ${allowed.join(' | ')}`;
 }
 
 export function missingFields(user: UserRow | null): RequiredField[] {
@@ -106,7 +146,7 @@ export async function saveProfile(
 
   if (fields.goal !== undefined) {
     const v = pickEnum(fields.goal, GOALS);
-    if (v) { patch.goal = v; saved.goal = v; } else ignored.push(`goal="${fields.goal}"`);
+    if (v) { patch.goal = v; saved.goal = v; } else ignored.push(rejected('goal', fields.goal, GOALS));
   }
 
   if (fields.days_per_week !== undefined) {
@@ -127,17 +167,17 @@ export async function saveProfile(
 
   if (fields.experience !== undefined) {
     const v = pickEnum(fields.experience, EXPERIENCE);
-    if (v) { patch.experience = v; saved.experience = v; } else ignored.push(`experience="${fields.experience}"`);
+    if (v) { patch.experience = v; saved.experience = v; } else ignored.push(rejected('experience', fields.experience, EXPERIENCE));
   }
 
   if (fields.life_stage !== undefined) {
     const v = pickEnum(fields.life_stage, LIFE_STAGES);
-    if (v) { patch.life_stage = v; saved.life_stage = v; } else ignored.push(`life_stage="${fields.life_stage}"`);
+    if (v) { patch.life_stage = v; saved.life_stage = v; } else ignored.push(rejected('life_stage', fields.life_stage, LIFE_STAGES));
   }
 
   if (fields.coach_tone !== undefined) {
     const v = pickEnum(fields.coach_tone, TONES);
-    if (v) { patch.coach_tone = v; saved.coach_tone = v; } else ignored.push(`coach_tone="${fields.coach_tone}"`);
+    if (v) { patch.coach_tone = v; saved.coach_tone = v; } else ignored.push(rejected('coach_tone', fields.coach_tone, TONES));
   }
 
   if (fields.tone_note !== undefined) {
@@ -195,12 +235,12 @@ export async function saveProfile(
 
   if (fields.activity_level !== undefined) {
     const v = pickEnum(fields.activity_level, ACTIVITY);
-    if (v) { patch.activity_level = v; saved.activity_level = v; } else ignored.push(`activity_level="${fields.activity_level}"`);
+    if (v) { patch.activity_level = v; saved.activity_level = v; } else ignored.push(rejected('activity_level', fields.activity_level, ACTIVITY));
   }
 
   if (fields.train_time !== undefined) {
     const v = pickEnum(fields.train_time, TRAIN_TIME);
-    if (v) { patch.train_time = v; saved.train_time = v; } else ignored.push(`train_time="${fields.train_time}"`);
+    if (v) { patch.train_time = v; saved.train_time = v; } else ignored.push(rejected('train_time', fields.train_time, TRAIN_TIME));
   }
 
   if (fields.dislikes !== undefined) {

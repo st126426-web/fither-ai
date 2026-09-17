@@ -3,10 +3,7 @@ import { serveStatic } from '@hono/node-server/serve-static';
 import { existsSync } from 'node:fs';
 import { assertLocalAuthSanity, loadConfig } from './config.ts';
 import { createApp } from './index.ts';
-import { AgentSdkEngine } from './engine/agent-sdk.ts';
-import { ApiEngine } from './engine/api.ts';
-import { MockEngine } from './engine/mock.ts';
-import { registerEngineFactory } from './engine/index.ts';
+import { registerNodeEngines } from './engine/node-engines.ts';
 import { seedDatabase } from './lib/bootstrap.ts';
 import { SqliteStorage } from './storage/sqlite.ts';
 
@@ -14,12 +11,8 @@ const cfg = loadConfig(process.env);
 assertLocalAuthSanity(cfg);
 
 // Node is the only runtime that can host the Agent SDK, so it is wired in here
-// rather than in shared code — see registerEngineFactory.
-registerEngineFactory((name, c) => {
-  if (name === 'agent-sdk') return new AgentSdkEngine();
-  if (name === 'api') return new ApiEngine({ apiKey: c.anthropicApiKey!, model: c.anthropicModel });
-  return new MockEngine();
-});
+// rather than in shared code — see registerNodeEngines.
+registerNodeEngines();
 
 const storage = new SqliteStorage(cfg.sqlitePath);
 await seedDatabase(storage, { includeUser: true });

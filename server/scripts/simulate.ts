@@ -8,6 +8,7 @@
  *   npm run -w server sim -- --redflag # the safety beat
  */
 import { loadConfig } from '../src/config.ts';
+import { registerNodeEngines } from '../src/engine/node-engines.ts';
 import { runCoach } from '../src/engine/index.ts';
 import { seedDatabase } from '../src/lib/bootstrap.ts';
 import { MIND } from '../src/lib/seed.ts';
@@ -16,6 +17,8 @@ import { SqliteStorage } from '../src/storage/sqlite.ts';
 import { parseJson } from '../src/lib/util.ts';
 import type { Plan } from '../src/engine/types.ts';
 
+// Without this, COACH_ENGINE=agent-sdk would silently run MockEngine.
+registerNodeEngines();
 const cfg = loadConfig({ ...process.env, COACH_ENGINE: process.env.COACH_ENGINE ?? 'mock' });
 const storage = new SqliteStorage(process.env.SQLITE_PATH || './data/fither-sim.db');
 await seedDatabase(storage, { includeUser: false, fresh: true });

@@ -5,7 +5,8 @@
  *   npm run -w server verify:agent
  */
 import { loadConfig } from '../src/config.ts';
-import { runCoach } from '../src/engine/index.ts';
+import { registerEngineFactory, runCoach } from '../src/engine/index.ts';
+import { AgentSdkEngine } from '../src/engine/agent-sdk.ts';
 import { seedDatabase } from '../src/lib/bootstrap.ts';
 import { MIND } from '../src/lib/seed.ts';
 import { SqliteStorage } from '../src/storage/sqlite.ts';
@@ -14,6 +15,15 @@ if (process.env.ANTHROPIC_API_KEY) {
   console.error('ANTHROPIC_API_KEY is set — unset it so subscription auth is used.');
   process.exit(1);
 }
+
+// Only src/node.ts registers the Agent SDK engine, because it is Node-only and
+// must never reach the Worker bundle. A script that skips that registration
+// falls through to MockEngine and "verifies" a path it never ran — which is
+// exactly the failure this script exists to catch.
+registerEngineFactory((name) => {
+  if (name !== 'agent-sdk') throw new Error(`verify:agent expected agent-sdk, got ${name}`);
+  return new AgentSdkEngine();
+});
 
 const cfg = loadConfig({ ...process.env, FITHER_MODE: 'local', COACH_ENGINE: 'agent-sdk' });
 const storage = new SqliteStorage('./data/fither-agent.db');
@@ -39,6 +49,16 @@ console.log(`tool calls    ${result.trace.tool_calls.map((t) => t.name).join(' �
 console.log(`validator     ${result.trace.validator_runs.map((v) => `#${v.attempt}:${v.passed ? 'pass' : v.codes.join('/')}`).join(' ') || '(none)'}`);
 console.log(`fallback      ${result.trace.fallback_used}`);
 console.log(`tokens        in=${result.trace.usage.input_tokens} out=${result.trace.usage.output_tokens} (${Date.now() - t0}ms)`);
+
+// A verification that can pass without touching the live path is worse than no
+// verification, so fail loudly rather than print a reassuring "ok".
+if (result.trace.engine !== 'agent-sdk' || result.trace.usage.input_tokens === 0) {
+  console.error(
+    `\nFAIL: this did not run live — engine=${result.trace.engine}, `
+    + `in=${result.trace.usage.input_tokens} tokens.`,
+  );
+  process.exit(1);
+}
 
 if (result.artifacts.plan) {
   const p = result.artifacts.plan;

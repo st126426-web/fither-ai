@@ -6,12 +6,15 @@
  *   COACH_ENGINE=agent-sdk npm run -w server sim:onboard
  */
 import { loadConfig } from '../src/config.ts';
+import { registerNodeEngines } from '../src/engine/node-engines.ts';
 import { routeChat } from '../src/conversation/router.ts';
 import { seedDatabase } from '../src/lib/bootstrap.ts';
 import { MIND } from '../src/lib/seed.ts';
 import { missingFields } from '../src/tools/profile.ts';
 import { SqliteStorage } from '../src/storage/sqlite.ts';
 
+// Without this, COACH_ENGINE=agent-sdk would silently run MockEngine.
+registerNodeEngines();
 const cfg = loadConfig({ ...process.env, COACH_ENGINE: process.env.COACH_ENGINE ?? 'mock' });
 const storage = new SqliteStorage(process.env.SQLITE_PATH || './data/fither-onboard.db');
 await seedDatabase(storage, { includeUser: false, fresh: true });
