@@ -137,7 +137,7 @@ export class AgentSdkEngine implements CoachEngine {
         prompt: buildUserPrompt(req),
         options: {
           systemPrompt: SYSTEM_PROMPT,
-          // No built-in Claude Code tools — the agent gets exactly four.
+          // No built-in Claude Code tools — the agent gets exactly these five.
           tools: [],
           mcpServers: { [SERVER_NAME]: server },
           allowedTools: [

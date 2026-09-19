@@ -1,260 +1,154 @@
 # FitHer AI — Speaker Script
 
-**Deck:** `FitHer AI - deck v2.pptx` · **Slides 6–10** · Group 7, AI Foundations for Business and Society
-**Runtime:** ~5 min 30 s for this block · **Prepared:** 2026-09-17
-
-> **Numbering note.** Your ask said "slides 6–9". In the deck's actual display
-> order that range is `05 • SOLUTION` → `08 • PROTOTYPE DEMO`. The four slides
-> built yesterday are the ones at positions **7–10** (`06 • PRODUCT` →
-> `09 • WHAT SHE ACTUALLY SEES`). This script covers **6 through 10** so both
-> readings are served. Drop slide 6 or 10 if you need the time back.
+Slides 7 and 8 · `06 • PRODUCT + HER JOURNEY` → `07 • AI AGENT FLOW`
+Read straight through. About four minutes, including the live beat on slide 8.
 
 ---
 
-## Slide 6 — `05 • SOLUTION`
-### "FitHer AI is a coach, not a content library"
-**Target: 50 s** · On screen: the five-step loop — intake → first plan → check-in → re-plan → venue match
+## Slide 7 — `06 • PRODUCT + HER JOURNEY`
 
-> Everything before this slide was the problem. This is the first slide where you
-> assert. Say the headline as a claim, not a description.
+Two surfaces.
 
-**Say:**
+The LINE bot is where she already is. No download, no login — because she opens
+LINE forty times a day anyway.
 
-"Everything you've seen so far is a content problem. This is where we stop
-solving a content problem.
+The web app is for the things a chat window is bad at. Marking a session done.
+Swapping Tuesday for Thursday. Editing her profile.
 
-The loop is five steps. A three-minute intake — goal, schedule, equipment, level,
-life stage. A first plan that is beginner-safe by construction. A weekly
-check-in: what she actually completed, how hard it felt, how she slept. Then the
-step that matters — a re-plan. And when her confidence is ready, not before, a
-venue match to a beginner-friendly gym.
-
-Four of those five steps exist in every fitness app on the market. The fourth one
-is the product. Sweat will give Mind a better library than we ever will. What
-Sweat will not do is notice that she trained once in three weeks and rebuild the
-next four weeks around that fact.
-
-Our killer feature is one sentence: **adaptive weekly re-planning after real-life
-disruption.** Everything else on this slide is the scaffolding that makes that
-one step possible."
-
-**Transition:** "So that's the loop. Here's what it actually runs on."
-
----
-
-## Slide 7 — `06 • PRODUCT`
-### "One coach, two surfaces, one conversation spine"
-**Target: 70 s** · On screen: three columns (LINE / web app / spine) + five proof stats
-
-> The temptation here is to read all twelve bullets. Don't. Name each column in
-> one line, then spend your time on the stat row — that's the part that is hard
-> to fake and easy to remember.
-
-**Say:**
-
-"Two surfaces. The LINE bot is where she already is — no download, no login,
-because she opens LINE forty times a day anyway. The web app is for the things a
-chat window is bad at: marking a session done, swapping Tuesday for Thursday,
-editing her profile.
-
-The middle column is the engineering claim, and it's the one I'd defend hardest.
+The third card is the engineering claim, and it's the one I'd defend hardest.
 These are not two products. One router is the only conversation logic in the
-system. Both surfaces read the same state and pass the same safety gate. She can
-start onboarding on LINE, get interrupted, and finish in the web app mid-flow —
-because there is no 'LINE version' of her to get out of sync.
+system. Both surfaces read the same state, and both pass the same safety gate.
+She can start onboarding on LINE, get interrupted, and finish in the web app
+mid-flow — because there is no LINE version of her to get out of sync.
 
-The numbers along the bottom are from the working prototype, not projections.
-Forty-two exercises, filtered by the equipment she actually owns. Two languages,
-Thai-first and English-complete — every string, including the coach's own words.
-Seventy-four automated safety tests. Zero unsafe plans shipped.
+Two choices you can see the moment you open it. She is greeted, not
+dashboarded — her goal, her streak, and the one session she actually has to do
+next. And every session carries its own why-line, so the plan explains itself
+instead of issuing orders. That's what makes it read as a coach rather than a
+spreadsheet that learned to talk.
 
-And the one in the middle — **minus twenty-two point two percent** — is the
-volume drop after a fully missed week. That is the re-plan from the last slide,
-as a measurable number.
+It's Thai-first and English-complete. The toggle switches every string — the
+interface, the seeded content, the venue notes, and the coach's own sentences.
+Not an English product with Thai bolted on afterwards. For a product aimed at
+Thai women, getting that backwards would have been the whole failure.
 
-I'll be honest about the boundary: onboarding, first plan, missed-week re-plan,
-gym match and the safety handoff all run end to end. Meals, coaches and
-communities are deliberately staged mocks. We built the spine, not the skin."
+The numbers in the middle are measured from the working prototype, not
+projected. Forty-two exercises, filtered to the equipment she actually owns. Two
+complete languages. A hundred and six automated safety tests. Zero unsafe plans
+shipped.
 
-**Transition:** "That's what she sees. Now the part this course is actually about —
-what happens between her message and the reply."
+And at least twenty percent — that's the volume cut after a fully missed week.
+It's a floor the validator enforces on every re-plan, not a number we happened
+to get once.
+
+Along the bottom is her journey. Four beats. Intake, in her own words. A first
+plan that's beginner-safe by construction. Then a missed week — one session out
+of three, sleep low. And then the beat that matters: the re-plan. Volume down,
+no guilt language, and a venue when she's ready for one.
+
+One honest boundary. Those four beats and the safety handoff all run end to end.
+Meals, coaches and communities are staged.
+
+There's a QR in the corner — don't reach for it yet. I'll leave it up at the end
+and you can try to break it yourselves.
+
+Now the part this course is actually about: what happens between her message and
+the reply.
 
 ---
 
 ## Slide 8 — `07 • AI AGENT FLOW`
-### "One agent, four tools, two deterministic gates"
-**Target: 90 s** · On screen: left-to-right flow with GATE 1 and GATE 2 bracketing the agent
 
-> **This is the slide the course is graded on.** It is the longest for a reason.
-> Walk the diagram left to right with your hand or the pointer — do not jump
-> around. The argument is: *the model reasons, but it is never trusted with
-> safety or arithmetic.*
+Follow it left to right.
 
-**Say:**
+Her message arrives. Free text, Thai or English, from either surface.
 
-"Follow it left to right.
+Before it reaches any model, it hits Gate one. A deterministic red-flag scan —
+keyword and pattern rules, no model, zero tokens. If she mentions chest pain, or
+dizziness, or bleeding, plan generation is blocked before a single token is
+spent, and she is handed to a human coach.
 
-Her message arrives — free text, Thai or English, from either surface.
+I want to be precise about why that ordering matters. We did not ask the model to
+be careful. We made it structurally unable to answer.
 
-Before it reaches any model, it hits **Gate 1**: a deterministic red-flag scan.
-Keyword and pattern rules, no model, **zero tokens.** If she mentions chest pain,
-or dizziness, or bleeding, plan generation is blocked *before a single token is
-spent* and she is handed to a human coach. I want to be precise about why that
-ordering matters: we did not ask the model to be careful. We made it structurally
-unable to answer.
+In the middle, the agent does the actual reasoning — with exactly five tools, and
+a ceiling of eight tool calls.
 
-In the middle, the agent does the actual reasoning, with exactly four tools and a
-ceiling of eight tool calls. `get_user_state` reads her profile and — importantly
-— the exact limits the validator will enforce, so the model can see the rules
-it's being held to. `save_profile` normalises and enum-checks every field.
-`save_plan` validates before it stores. `search_partners` returns vetted gyms,
-with Maps as fallback.
+get_user_state reads her profile and, importantly, the exact limits the validator
+is about to enforce. So the model can see the rules it's being held to.
 
-Then **Gate 2**: the plan validator. Volume, duration, load. If the plan fails,
-the agent gets told why and retries — at most twice. If it still fails, we ship a
-rule-built template plan instead. The user always gets a safe plan; she never
-gets an apology.
+save_profile normalises and enum-checks every field.
 
-Two things I'd flag as the real design decisions. First: everything factual —
-the saved plan, the venue, every validator run — is read back out of the tool
-layer, not out of the model's text. So the agent physically cannot claim a plan
-it did not save. Second: **safety is never a model decision.** It's a rule, it
-runs first, and it costs nothing."
+save_plan validates before it stores.
 
-**Transition:** "Rather than take my word for any of that — here it is running."
+search_partners returns beginner-vetted partner gyms.
 
----
+And maps_fallback fires only when that one comes back empty. Everything it
+returns is marked unvetted, in her reply and in the database. We would rather
+tell her we haven't checked this one than quietly pass a Maps result off as
+vetted.
 
-## Slide 9 — `08 • PROTOTYPE DEMO`
-### "One complete journey — live, on your own phone"
-**Target: 60 s of talking** (plus live demo time — budget 2 min more)
-On screen: QR + the four beats — intake → first plan → missed week → re-plan + venue
+Then Gate two. The plan validator — volume, duration, load. If the plan fails,
+the agent is told why, and retries. At most twice. If it still fails, we ship a
+rule-built template plan instead. She always gets a safe plan. She never gets an
+apology.
 
-> **Get the QR up and stop talking for five seconds.** Let people scan. The
-> silence feels long to you and normal to them. See the delivery notes below
-> before you run this — there's one honesty point that matters.
+Two things I'd flag as the real design decisions.
 
-**Say:**
+First. Everything factual comes out of the tool layer, not out of the model's
+text. The saved plan, the venue, every validator run. So the agent physically
+cannot claim a plan it did not save.
 
-"Please scan that now — it opens in the browser, no install, no login.
+Second. Safety is never a model decision. It's a rule, it runs first, and it
+costs nothing.
 
-While you're getting in, here's what we're going to do. Four beats.
+Rather than take my word for any of that — let me run the beat that matters,
+right now, on this slide.
 
-One — intake. Tone and strength, forty-five minutes, dumbbells. That's her whole
-setup.
+*(Tap* **สัปดาห์นี้ไม่ได้ทำเลย** *— "missed the whole week". Leave this slide up. ~23 seconds.)*
 
-Two — the first plan comes back. Monday lower body, Wednesday upper, Friday full
-body.
+While that's thinking — it is calling save_plan right now, and the validator is
+about to check what comes back. If the volume isn't at least twenty percent down
+on the week she missed, it gets rejected, told why, and made to try again.
 
-Three — and this is the beat that matters — I'm going to tell it she had a bad
-week. One session out of three. Sleep low, soreness high. This is the moment the
-app in Mind's real story did nothing, and she quit three weeks later.
+*(When it lands.)*
 
-Four — watch the plan change. Volume comes down, lower body moves, and it
-recommends a studio when she's ready for one.
+There. Thirty sets down to twenty-four. Twenty percent, and not a word of guilt
+in it — because guilt language is one of the thirteen things that validator
+rejects.
 
-A course MVP doesn't need a full app. It needs one complete journey that actually
-runs. This is ours."
-
-**Demo success condition:** the audience scans, and then *watches the plan change
-after disruption.* If you only have time for one beat, do beat three.
+That is the product. Everything else is scaffolding that makes that one step
+possible.
 
 ---
 
-## Slide 10 — `09 • WHAT SHE ACTUALLY SEES`
-### "Not a mockup — the running prototype"
-**Target: 50 s** · On screen: Home and Plan screenshots + the language toggle
-
-> Closing slide of this block. Land the Thai-first point — in this course,
-> that's the bias/accessibility argument, and it scores.
-
-**Say:**
-
-"These are screenshots, not a design file. This is the thing you just had open.
-
-Two deliberate choices. First, she's greeted, not dashboarded. Her goal, her
-streak, and the one session she actually has to do next. No wall of charts to
-decode before she knows what to do today.
-
-Second, every session carries its own why-line. Week one is thirty sets across
-three days — but next to each one it says *why* it's that and not something else.
-The plan explains itself instead of issuing orders. That's what makes it feel
-like a coach rather than a spreadsheet that learned to talk.
-
-And the toggle in the corner switches everything — interface, seeded content,
-venue notes, and the coach's own sentences. Thai-first, English-complete. Not
-an English product with a Thai translation bolted on. For a product aimed at Thai
-women, getting that backwards would have been the whole failure."
-
-**Transition into slide 11 (`10 • REVENUE MODEL`):** "So that's the product and
-it runs. The obvious next question is whether anyone pays for it."
-
----
-
-## Delivery notes
-
-**1. The QR gives the audience the *mock* build — the laptop is the live one.**
-This is the one place where an offhand claim could get you caught. The hosted
-build at `st126426-web.github.io/fither-ai` runs the keyword engine, because the
-Agent SDK drives the local `claude` CLI as a subprocess and Cloudflare Workers
-has no Node, no filesystem and no login — it *cannot* run hosted. So:
-
-- Safe phrasing: *"the running prototype"*, *"the real flow, real plan data"* — all true of the hosted build.
-- Avoid: *"that's live AI on your phone right now."* It isn't.
-- If you want live AI in the room, drive **beat three from your laptop** on the
-  projector and let the phones follow along. That's the intended demo path, and
-  it's what's running right now.
-
-**2. Live AI has ~10 s of latency.** A real agent turn measured just now took
-**10.2 seconds** (199 output tokens). That is a very long silence on stage. Fill
-it deliberately — that's exactly where the slide 8 recap fits: *"while that
-thinks — remember, it's calling save_plan, and the validator is about to check
-it."* Don't stare at the screen.
-
-**3. If the live path fails mid-demo,** `COACH_ENGINE=mock npm run dev:local`
-gives you the identical journey with zero LLM calls and no latency. The audience
-cannot tell the difference in the four beats you're showing. Have that terminal
-open on a second tab before you start.
-
-**4. Reset before you present:** `npm run demo:reset -- --onboarding` puts Mind
-back to step zero. If you skip this, she already has a plan and the agent will
-talk about *that* instead of onboarding — which reads as a broken demo.
-
-The reset now survives a server restart, and the server prints the state it will
-open in, so you can check it off the screen instead of finding out in front of
-the room:
+## Before you walk on
 
 ```
-  FitHer AI — mode=local engine=agent-sdk storage=sqlite(./data/fither.db)
-  Demo state onboarding — she will be asked the first question
+npm run demo:reset          # profile re-seeded, no plans
+npm run dev:local
+# send one message: ขอแผนสัปดาห์นี้หน่อยค่ะ   → Week 1 saved, ~26 s
 ```
 
-If that line says *already onboarded*, run the reset and reload. For the hosted
-build the equivalent is `curl -X POST https://fither-ai.fither.workers.dev/api/demo-reset/mind`.
+That parks her exactly at the check-in, so slide 8's live beat is one tap. Do it
+before the session, not between slides. If the live path dies,
+`COACH_ENGINE=mock npm run dev:local` gives the same beat with no latency.
 
 ---
 
-## Likely questions
+## If a question goes technical
 
-**"Isn't the safety gate just a keyword filter? That's not AI."**
-Correct, and that's the design. A keyword filter that runs before the model has a
-property no model has: it cannot be talked out of it, and it costs nothing. We
-use the model where judgment helps and rules where judgment is a liability.
+The appendix is A1 to A5, after the closing slide:
 
-**"What stops the model inventing a plan it didn't save?"**
-Structurally, nothing in the *text* — so we don't read the text. Every factual
-field in the response is read back out of the tool layer. If `save_plan` didn't
-run, there is no plan in the reply, regardless of what the model wrote.
+| | |
+|---|---|
+| **A1** | Architecture — one spine, three engines, two runtimes, 9,219 lines |
+| **A2** | The five tool contracts and their typed schemas |
+| **A3** | Gate 1 — the red-flag scanner, and how it avoids Thai false positives |
+| **A4** | Gate 2 — the thirteen rejection codes and the retry ladder |
+| **A5** | 106 tests, the measured numbers, and why we wrote code |
 
-**"Why LINE instead of an app?"**
-Download and login are where beginner fitness funnels die. She has LINE open
-already. The web app exists for what chat is bad at, and it's still no-login.
-
-**"Why only 42 exercises?"**
-Because they're equipment-filtered and beginner-vetted. The constraint isn't
-catalogue size — it's whether the next session is safe with the two dumbbells
-she actually owns.
-
-**"−22.2% — is that tuned to look good?"**
-It's the validator's output for a fully missed week against the pilot rule of at
-least a 20% reduction. It's a rule firing, not a number we picked.
+If someone asks why this isn't a no-code workflow: **A5**. The short answer is
+that a workflow canvas wires API calls together, and it does not give you a typed
+tool boundary, a gate that runs before the model, a validator that can reject a
+result and force a retry, or a test suite that proves any of it.

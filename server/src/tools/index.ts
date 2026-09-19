@@ -19,7 +19,7 @@ export interface ToolState {
 }
 
 /**
- * Binds the four tools to a storage instance and one request, and records
+ * Binds the five tools to a storage instance and one request, and records
  * everything the engine does so the orchestrator can build CoachResult.trace
  * without the engine having to cooperate.
  */

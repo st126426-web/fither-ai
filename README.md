@@ -59,7 +59,7 @@ subscription auth:
 | Beat | Result |
 |---|---|
 | 1–2 Onboard → Week 1 | Live agent runs the conversation itself from typed answers → validated plan, first try |
-| 3 Missed week | 27 → 21 sets (**−22.2%**), zero guilt words, warm Thai why-line |
+| 3 Missed week | **≥ 20%** less volume (live 30 → 24; mock 24 → 19), zero guilt words, warm Thai why-line |
 | 4 Gym | Live agent: `search_partners` → vetted Ladprao venue, no fallback. Emptying `partners` → `maps_fallback` labelled `vetted:false` |
 | 5 Red flag | `เจ็บเข่า` → **no plan generated**, human handoff, flag logged, **0 tokens** |
 
@@ -73,7 +73,7 @@ Also checked end to end:
 - The Pages build emits `/fither-ai/`-prefixed asset URLs.
 - Mock seed data is **inlined into the JS bundle** — the mock sections make no
   network calls at all, and the only `fetch` in the bundle is the API client.
-- `npm test` — 74 cases.
+- `npm test` — 106 cases.
 
 ## What the live run found
 
@@ -533,7 +533,7 @@ LINE event ──► router ──► pre-flight red-flag scan (deterministic, 0
                                    CoachResult ──► Flex card + web + events
 ```
 
-One agent, one system prompt, **four tools and only four**. Meals, coaches,
+One agent, one system prompt, **five tools and only five**. Meals, coaches,
 communities and events have no tools — they are UI mocks.
 
 Three things make the plan path reliable rather than lucky:
@@ -556,7 +556,7 @@ its `save_plan` retries, a deterministic template plan ships instead.
 
 ```
 server/src/engine/    CoachEngine interface + agent-sdk | api | mock + prompts + template planner
-server/src/tools/     the four tools
+server/src/tools/     the five tools
 server/src/safety/    deterministic validator + editable rules.json
 server/src/conversation/  the one conversation spine: router + neutral message/card types
 server/src/line/      signature verify, LINE event normalisation, Flex builders + adapter
@@ -611,7 +611,7 @@ notes only, and a guilt-language scan on the why-line. Every rejection is
 logged to `events` — that is the "zero unsafe plans" metric.
 
 ```bash
-npm test    # 74 cases
+npm test    # 106 cases
 ```
 
 The load-note rule is worth calling out: it exists to stop progression *jumps*,
